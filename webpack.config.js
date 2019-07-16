@@ -1,19 +1,19 @@
-const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const GasPlugin = require('gas-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-const WebpackCleanPlugin = require('webpack-clean');
+const path = require("path");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const CleanWebpackPlugin = require("clean-webpack-plugin");
+const GasPlugin = require("gas-webpack-plugin");
+const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
+const WebpackCleanPlugin = require("webpack-clean");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
+const HtmlWebpackInlineSourcePlugin = require("html-webpack-inline-source-plugin");
 
-const destination = 'dist';
+const destination = "dist";
 
 const htmlPlugin = new HtmlWebpackPlugin({
-  template: "./src/client/dialog-template.html",
-  filename: "dialog.html",
-  inlineSource: '.(js|css)$' // embed all javascript and css inline
+  template: "./src/client/index.html",
+  filename: "index.html",
+  inlineSource: ".(js|css)$" // embed all javascript and css inline
 });
 
 const htmlWebpackInlineSourcePlugin = new HtmlWebpackInlineSourcePlugin();
@@ -36,14 +36,14 @@ const sharedConfigSettings = {
       })
     ]
   },
-  module: {},
+  module: {}
 };
 
 const eslintConfig = {
-  enforce: 'pre',
+  enforce: "pre",
   test: /\.jsx?$/,
   exclude: /node_modules/,
-  loader: 'eslint-loader',
+  loader: "eslint-loader",
   options: {
     cache: false,
     failOnError: false,
@@ -58,7 +58,7 @@ const appsscriptConfig = {
     new CleanWebpackPlugin([destination]),
     new CopyWebpackPlugin([
       {
-        from: './appsscript.json'
+        from: "./appsscript.json"
       }
     ])
   ]
@@ -68,10 +68,10 @@ const clientConfig = Object.assign({}, sharedConfigSettings, {
   name: "CLIENT",
   entry: "./src/client/index.jsx",
   output: {
-    path: path.resolve(__dirname, destination),
+    path: path.resolve(__dirname, destination)
   },
   resolve: {
-    extensions: ['.js', '.jsx', '.json']
+    extensions: [".js", ".jsx", ".json"]
   },
   module: {
     rules: [
@@ -85,16 +85,14 @@ const clientConfig = Object.assign({}, sharedConfigSettings, {
       },
       {
         test: /\.css$/,
-        use: [ 'style-loader', 'css-loader' ]
+        use: ["style-loader", "css-loader"]
       }
-    ],
+    ]
   },
   plugins: [
     htmlPlugin,
     new HtmlWebpackInlineSourcePlugin(),
-    new WebpackCleanPlugin([
-      destination + '/' + 'main.js',
-    ])
+    new WebpackCleanPlugin([destination + "/" + "main.js"])
   ]
 });
 
@@ -102,9 +100,9 @@ const serverConfig = Object.assign({}, sharedConfigSettings, {
   name: "SERVER",
   entry: "./src/server/code.js",
   output: {
-    filename: 'code.js',
+    filename: "code.js",
     path: path.resolve(__dirname, destination),
-    libraryTarget: 'this'
+    libraryTarget: "this"
   },
   module: {
     rules: [
@@ -115,16 +113,10 @@ const serverConfig = Object.assign({}, sharedConfigSettings, {
         use: {
           loader: "babel-loader"
         }
-      },
-    ],
+      }
+    ]
   },
-  plugins: [
-    new GasPlugin()
-  ]
+  plugins: [new GasPlugin()]
 });
 
-module.exports = [
-  appsscriptConfig,
-  clientConfig,
-  serverConfig,
-];
+module.exports = [appsscriptConfig, clientConfig, serverConfig];
