@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import Navbar from './components/navbar/Navbar';
 import Alert from './components/alert/Alert';
+import FormPage from './components/form-page/FormPage';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
@@ -19,7 +20,7 @@ export default function AppRouter() {
           handleClose={closeAlert}
         />
         <Switch>
-          <Route path="/" component={HomePage} exact />
+          <Route path="/" component={FormPage} exact />
         </Switch>
       </Container>
     </BrowserRouter>
