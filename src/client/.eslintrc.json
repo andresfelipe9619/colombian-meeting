@@ -1,15 +1,8 @@
 {
   "root": true,
   "parser": "babel-eslint",
-  "extends": [
-    "plugin:react/recommended",
-    "eslint:recommended",
-    "google"
-  ],
-  "plugins": [
-    "babel",
-    "react"
-  ],
+  "extends": ["plugin:react/recommended", "eslint:recommended", "google"],
+  "plugins": ["babel", "react"],
   "env": {
     "browser": true
   },
@@ -19,6 +12,7 @@
     "css": true
   },
   "rules": {
+    "react/prop-types": 0,
     "import/prefer-default-export": 0,
     "no-console": 0,
     "require-jsdoc": 0,

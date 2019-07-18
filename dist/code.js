@@ -76,7 +76,7 @@ function setActiveSheet() {
         return setActiveSheet;
     });
     var doGet = function() {
-        return HtmlService.createHtmlOutputFromFile("dialog.html").setTitle("Google Apps Script").setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
+        return HtmlService.createHtmlOutputFromFile("index.html").setTitle("Google Apps Script").setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
     }, onOpen = function() {
         SpreadsheetApp.getUi().createMenu("Custom scripts").addItem("Edit sheets [sample React project]", "openDialog").addToUi();
     }, openDialog = function() {

@@ -17,7 +17,10 @@
   ],
   "author": "Andrés Suárez",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "@material-ui/core": "^4.2.0",
+    "formik": "^1.5.8"
+  },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.5",
