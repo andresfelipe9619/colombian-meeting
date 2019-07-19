@@ -1,35 +1,35 @@
 // Use ES6/7 code
-const ROOT_FOLDER = 'COGESTEC';
+const ROOT_FOLDER = 'ENCUENTRO COLOMBIANO';
 const REQUEST_PAYLOAD = null;
 const GENERAL_DB =
-  'https://docs.google.com/spreadsheets/d/1108Pbaw4SD_Cpx2xc6Q7x1UvrET0SsPgNNZOPumt9Gg/edit#gid=0';
+  'https://docs.google.com/spreadsheets/d/1OG6EPZzzVq_P2KjQ6kDcsJ0YmMlwSYwcZ-Xqb4LeOFo/edit#gid=0';
 
 function doGet(request) {
   return createHtmlTemplate('index.html');
 }
 
 function createHtmlTemplate(filename) {
-  return HtmlService.createTemplateFromFile(filename)
-    .evaluate()
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  return HtmlService.createHtmlOutputFromFile(filename)
+    .setTitle('Encuentro Colombiano')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
 }
 
-function include(filename) {
-  return HtmlService.createHtmlOutputFromFile(filename).getContent();
-}
+// function include(filename) {
+//   return HtmlService.createHtmlOutputFromFile(filename).getContent();
+// }
 
-function doPost(request) {
-  Logger.log('request');
-  Logger.log(request);
+// function doPost(request) {
+//   Logger.log('request');
+//   Logger.log(request);
 
-  if (typeof request != 'undefined') {
-    Logger.log(request);
-    let params = request.parameter;
-    Logger.log('params');
-    Logger.log(params);
-    return ContentService.createTextOutput(JSON.stringify(request.parameter));
-  }
-}
+//   if (typeof request != 'undefined') {
+//     Logger.log(request);
+//     let params = request.parameter;
+//     Logger.log('params');
+//     Logger.log(params);
+//     return ContentService.createTextOutput(JSON.stringify(request.parameter));
+//   }
+// }
 
 function validateUserSession() {
   const guess_email = Session.getActiveUser().getEmail();
@@ -169,12 +169,9 @@ function changePonencia(index, value) {
 
 function validatePerson(cedula) {
   let inscritos = getPeopleRegistered();
-  let dir_cert_asist_id = '1JaaxtryYVDuU8fhX513MBpBUPn7r_zM5';
-  let dir_cert_asist = DriveApp.getFolderById(dir_cert_asist_id);
-  let certificados_asistencia = dir_cert_asist.getFiles();
-  let dir_cert_ponen_id = '17ubi8AdovGF9kKNA-V1mlG79NPqrx89c';
-  let dir_cert_ponen = DriveApp.getFolderById(dir_cert_ponen_id);
-  let certificados_ponencia = dir_cert_ponen.getFiles();
+  // let dir_cert_ponen_id = '17ubi8AdovGF9kKNA-V1mlG79NPqrx89c';
+  // let dir_cert_ponen = DriveApp.getFolderById(dir_cert_ponen_id);
+  // let certificados_ponencia = dir_cert_ponen.getFiles();
   let result = {
     isRegistered: false,
     index: -1,
@@ -187,37 +184,37 @@ function validatePerson(cedula) {
       result.isRegistered = true;
       result.index = person;
       result.data = inscritos[person];
-      if (
-        ((String(inscritos[person].hora_ingreso).length > 0.0 &&
-          String(inscritos[person].hora_ingreso) !== '-') ||
-          (String(inscritos[person].hora_ingreso_viernes).length > 0.0 &&
-            String(inscritos[person].hora_ingreso_viernes) !== '-')) &&
-        String(inscritos[person].pago_comprobado) == 'SI'
-      ) {
-        while (certificados_asistencia.hasNext()) {
-          let certificado = certificados_asistencia.next();
-          if (certificado.getName().split('-')[0] == cedula) {
-            let arcDesc = Drive.Files.get(certificado.getId());
-            result.cert_asist = arcDesc.webContentLink;
-            break;
-          }
-        }
-      }
-      if (
-        String(inscritos[person].ponencia_file).length > 0.0 &&
-        String(inscritos[person].ponencia_file) !== '-'
-      ) {
-        while (certificados_ponencia.hasNext()) {
-          let certificadoP = certificados_ponencia.next();
-          if (certificadoP.getName().split('-')[0] == cedula) {
-            let certDesc = Drive.Files.get(certificadoP.getId());
-            Logger.log('Link ponencia');
-            Logger.log(certDesc.webContentLink);
-            result.cert_ponen = certDesc.webContentLink;
-            break;
-          }
-        }
-      }
+      // if (
+      //   ((String(inscritos[person].hora_ingreso).length > 0.0 &&
+      //     String(inscritos[person].hora_ingreso) !== '-') ||
+      //     (String(inscritos[person].hora_ingreso_viernes).length > 0.0 &&
+      //       String(inscritos[person].hora_ingreso_viernes) !== '-')) &&
+      //   String(inscritos[person].pago_comprobado) == 'SI'
+      // ) {
+      //   while (certificados_asistencia.hasNext()) {
+      //     let certificado = certificados_asistencia.next();
+      //     if (certificado.getName().split('-')[0] == cedula) {
+      //       let arcDesc = Drive.Files.get(certificado.getId());
+      //       result.cert_asist = arcDesc.webContentLink;
+      //       break;
+      //     }
+      //   }
+      // }
+      // if (
+      //   String(inscritos[person].ponencia_file).length > 0.0 &&
+      //   String(inscritos[person].ponencia_file) !== '-'
+      // ) {
+      //   while (certificados_ponencia.hasNext()) {
+      //     let certificadoP = certificados_ponencia.next();
+      //     if (certificadoP.getName().split('-')[0] == cedula) {
+      //       let certDesc = Drive.Files.get(certificadoP.getId());
+      //       Logger.log('Link ponencia');
+      //       Logger.log(certDesc.webContentLink);
+      //       result.cert_ponen = certDesc.webContentLink;
+      //       break;
+      //     }
+      //   }
+      // }
     }
   }
   logFunctionOutput(validatePerson.name, result);
@@ -404,4 +401,11 @@ function sendEmail(subject, body, person) {
   }
 }
 
-export {doGet, getSheetsData, addSheet, deleteSheet, setActiveSheet};
+export {
+  doGet,
+  getSheetsData,
+  addSheet,
+  deleteSheet,
+  setActiveSheet,
+  searchPerson,
+};

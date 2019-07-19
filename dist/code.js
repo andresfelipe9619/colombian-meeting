@@ -2,7 +2,7 @@ function onOpen() {
 }
 function doGet() {
 }
-function openDialog() {
+function searchPerson() {
 }
 function getSheetsData() {
 }
@@ -62,10 +62,6 @@ function setActiveSheet() {
     "use strict";
     __webpack_require__.d(__webpack_exports__, "c", function() {
         return doGet;
-    }), __webpack_require__.d(__webpack_exports__, "e", function() {
-        return onOpen;
-    }), __webpack_require__.d(__webpack_exports__, "f", function() {
-        return openDialog;
     }), __webpack_require__.d(__webpack_exports__, "d", function() {
         return getSheetsData;
     }), __webpack_require__.d(__webpack_exports__, "a", function() {
@@ -74,15 +70,15 @@ function setActiveSheet() {
         return deleteSheet;
     }), __webpack_require__.d(__webpack_exports__, "g", function() {
         return setActiveSheet;
+    }), __webpack_require__.d(__webpack_exports__, "f", function() {
+        return searchPerson;
     });
-    var doGet = function() {
-        return HtmlService.createHtmlOutputFromFile("index.html").setTitle("Google Apps Script").setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
-    }, onOpen = function() {
-        SpreadsheetApp.getUi().createMenu("Custom scripts").addItem("Edit sheets [sample React project]", "openDialog").addToUi();
-    }, openDialog = function() {
-        var html = HtmlService.createHtmlOutputFromFile("dialog").setWidth(400).setHeight(600);
-        SpreadsheetApp.getUi().showModalDialog(html, "Sheet Editor");
-    }, getSheets = function() {
+    var GENERAL_DB = "https://docs.google.com/spreadsheets/d/1OG6EPZzzVq_P2KjQ6kDcsJ0YmMlwSYwcZ-Xqb4LeOFo/edit#gid=0";
+    function doGet(request) {
+        return filename = "index.html", HtmlService.createHtmlOutputFromFile(filename).setTitle("Encuentro Colombiano").setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
+        var filename;
+    }
+    var getSheets = function() {
         return SpreadsheetApp.getActive().getSheets();
     }, getSheetsData = function() {
         var activeSheetName = SpreadsheetApp.getActive().getSheetName();
@@ -102,12 +98,54 @@ function setActiveSheet() {
     }, setActiveSheet = function(sheetName) {
         return SpreadsheetApp.getActive().getSheetByName(sheetName).activate(), getSheetsData();
     };
+    function getPeopleRegistered() {
+        return function(sheetValues, headers) {
+            var headings = headers || sheetValues[0].map(String.toLowerCase), people = null;
+            sheetValues && (people = sheetValues.slice(1));
+            return function(people, headings) {
+                return people.map(function(personAsArray) {
+                    var personAsObj = {};
+                    return headings.forEach(function(heading, i) {
+                        personAsObj[heading] = personAsArray[i];
+                    }), personAsObj;
+                });
+            }(people, headings);
+        }(function(url, sheet) {
+            var mSheet = getSheetFromSpreadSheet(url, sheet);
+            if (mSheet) return mSheet.getSheetValues(1, 1, mSheet.getLastRow(), mSheet.getLastColumn());
+        }(GENERAL_DB, "INSCRITOS"));
+    }
+    function searchPerson(cedula) {
+        var person = validatePerson(cedula);
+        return logFunctionOutput(searchPerson.name, person), person;
+    }
+    function validatePerson(cedula) {
+        var inscritos = getPeopleRegistered(), result = {
+            isRegistered: !1,
+            index: -1,
+            data: null,
+            cert_asist: "",
+            cert_ponen: ""
+        };
+        for (var person in inscritos) String(inscritos[person].cedula) === String(cedula) && (result.isRegistered = !0, 
+        result.index = person, result.data = inscritos[person]);
+        return logFunctionOutput(validatePerson.name, result), result.index < 0 && (result.isRegistered = !1), 
+        JSON.stringify(result);
+    }
+    function getSheetFromSpreadSheet(url, sheet) {
+        var Spreedsheet = SpreadsheetApp.openByUrl(url);
+        if (url && sheet) return Spreedsheet.getSheetByName(sheet);
+    }
+    function logFunctionOutput(functionName, returnValue) {
+        Logger.log("Function--------\x3e" + functionName), Logger.log("Value------------\x3e"), 
+        Logger.log(returnValue), Logger.log("----------------------------------");
+    }
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
     __webpack_require__.r(__webpack_exports__), function(global) {
         var _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
-        global.onOpen = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["e"], global.doGet = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["c"], 
-        global.openDialog = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["f"], global.getSheetsData = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["d"], 
+        global.onOpen = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["onOpen"], global.doGet = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["c"], 
+        global.searchPerson = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["f"], global.getSheetsData = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["d"], 
         global.addSheet = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["a"], global.deleteSheet = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["b"], 
         global.setActiveSheet = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["g"];
     }.call(this, __webpack_require__(2));

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import * as Yup from 'yup';
 import {Formik} from 'formik';
 import Grid from '@material-ui/core/Grid';
@@ -7,8 +7,15 @@ import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import server from '../../server';
 
 export default function FormPage() {
+  const {searchPerson} = server;
+
+  useEffect(() => {
+    searchPerson('123').then((data) => console.log('data', data));
+  }, []);
+
   return (
     <div>
       <Typography variant="h3" gutterBottom>
@@ -35,16 +42,7 @@ export default function FormPage() {
         }}
         onSubmit={(values, {setSubmitting}) => {
           setSubmitting(true);
-          const {
-            numeroDocumento,
-            nombre,
-            apellidos,
-            universidad,
-            email,
-            direcccion,
-            telefono,
-            ciudad,
-          } = values;
+          console.log('values', values);
           setTimeout(() => setSubmitting(false), 2000);
         }}
         validationSchema={Yup.object().shape({
