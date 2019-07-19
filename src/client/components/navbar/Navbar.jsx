@@ -27,24 +27,6 @@ function Navbar(props) {
             Encuentro Colombiano
           </Typography>
           <div className={classes.grow} />
-          <div className={classes.sectionDesktop}>
-            <IconButton color="inherit" onClick={goTo('/cart')}>
-              <ShoppingCart />
-            </IconButton>
-            <IconButton
-              aria-label="Show 4 new notifications"
-              color="inherit"
-              onClick={goTo('/favorites')}
-            >
-              <Favorite />
-            </IconButton>
-          </div>
-        </Toolbar>
-        <Toolbar component="nav" variant="dense" color="secondary">
-          <Typography variant="h6" noWrap onClick={goTo('/products')}>
-            Categories
-          </Typography>
-          <div className={classes.grow} />
         </Toolbar>
       </AppBar>
     </div>

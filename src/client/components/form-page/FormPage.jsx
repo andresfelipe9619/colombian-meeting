@@ -3,12 +3,14 @@ import * as Yup from 'yup';
 import {Formik} from 'formik';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import Dropzone from '../dropzone/Dropzone';
 import server from '../../server';
-
 export default function FormPage() {
   const {searchPerson} = server;
 
@@ -27,11 +29,12 @@ export default function FormPage() {
       <Formik
         initialValues={{
           numeroDocumento: '',
+          tipoDocumento: '',
           nombre: '',
           apellidos: '',
           universidad: '',
           email: '',
-          direcccion: '',
+          direccion: '',
           telefono: '',
           ciudad: '',
           celular: '',
@@ -93,7 +96,24 @@ export default function FormPage() {
                     autoComplete="lname"
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={6}>
+                  <FormControl>
+                    <InputLabel htmlFor="age-simple">Age</InputLabel>
+                    <Select
+                      value={values.tipoDocumento}
+                      onChange={handleChange}
+                      inputProps={{
+                        name: 'age',
+                        id: 'age-simple',
+                      }}
+                    >
+                      <MenuItem value={'c.c'}>C.C</MenuItem>
+                      <MenuItem value={'t.i'}>T.I</MenuItem>
+                      <MenuItem value={'ext'}>Extranjero</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     value={values.numeroDocumento}
                     onChange={handleChange}
@@ -136,23 +156,23 @@ export default function FormPage() {
                     error={!!(touched.email && errors.email)}
                     id="email"
                     name="email"
-                    label="email/Province/Region"
+                    label="Email"
                     fullWidth
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    value={values.direcccion}
+                    value={values.direccion}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    helperText={touched.direcccion && errors.direcccion}
-                    error={!!(touched.direcccion && errors.direcccion)}
+                    helperText={touched.direccion && errors.direccion}
+                    error={!!(touched.direccion && errors.direccion)}
                     required
-                    id="direcccion"
-                    name="direcccion"
-                    label="direcccion / Postal code"
+                    id="direccion"
+                    name="direccion"
+                    label="Direccion"
                     fullWidth
-                    autoComplete="billing postal-code"
+                    autoComplete="billing address"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -170,17 +190,106 @@ export default function FormPage() {
                     autoComplete="billing telefono"
                   />
                 </Grid>
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        color="secondary"
-                        name="savenumeroDocumento"
-                        value="yes"
-                      />
-                    }
-                    label="Use this numeroDocumento for payment details"
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    value={values.celular}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={touched.celular && errors.celular}
+                    error={!!(touched.celular && errors.celular)}
+                    required
+                    id="celular"
+                    name="celular"
+                    label="celular"
+                    fullWidth
+                    autoComplete="billing celular"
                   />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormControl>
+                    <InputLabel htmlFor="age-simple">Age</InputLabel>
+                    <Select
+                      value={values.tematicaPonencia}
+                      onChange={handleChange}
+                      inputProps={{
+                        name: 'age',
+                        id: 'age-simple',
+                      }}
+                    >
+                      <MenuItem value={10}>Ten</MenuItem>
+                      <MenuItem value={20}>Twenty</MenuItem>
+                      <MenuItem value={30}>Thirty</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    value={values.descripcionPonencia}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={
+                      touched.descripcionPonencia && errors.descripcionPonencia
+                    }
+                    error={
+                      !!(
+                        touched.descripcionPonencia &&
+                        errors.descripcionPonencia
+                      )
+                    }
+                    multiline
+                    rowsMax="4"
+                    required
+                    id="descripcionPonencia"
+                    name="descripcionPonencia"
+                    label="descripcionPonencia"
+                    fullWidth
+                    autoComplete="billing descripcionPonencia"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    value={values.importanciaTema}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={
+                      touched.importanciaTema && errors.importanciaTema
+                    }
+                    error={
+                      !!(touched.importanciaTema && errors.importanciaTema)
+                    }
+                    multiline
+                    rowsMax="4"
+                    required
+                    id="importanciaTema"
+                    name="importanciaTema"
+                    label="importanciaTema"
+                    fullWidth
+                    autoComplete="billing importanciaTema"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    value={values.motivosInteres}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={touched.motivosInteres && errors.motivosInteres}
+                    error={!!(touched.motivosInteres && errors.motivosInteres)}
+                    required
+                    multiline
+                    rowsMax="4"
+                    id="motivosInteres"
+                    name="motivosInteres"
+                    label="motivosInteres"
+                    fullWidth
+                    autoComplete="billing motivosInteres"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <p>Files</p>
+                  <Dropzone />
+                </Grid>
+                <Grid item xs={12}>
+                  <p>lorem</p>
                 </Grid>
                 <Button variant="contained" type="submit" color="primary">
                   Enviar
