@@ -8,10 +8,13 @@
   },
   "globals": {
     "SpreadsheetApp": true,
+    "Drive": true,
     "HtmlService": true,
     "global": true
   },
   "rules": {
-    "import/prefer-default-export": 0
+    "import/prefer-default-export": 0,
+    "require-jsdoc": 0,
+    "guard-for-in": 0
   }
 }

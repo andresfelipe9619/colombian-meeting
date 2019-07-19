@@ -35,7 +35,16 @@ export default function FormPage() {
         }}
         onSubmit={(values, {setSubmitting}) => {
           setSubmitting(true);
-
+          const {
+            numeroDocumento,
+            nombre,
+            apellidos,
+            universidad,
+            email,
+            direcccion,
+            telefono,
+            ciudad,
+          } = values;
           setTimeout(() => setSubmitting(false), 2000);
         }}
         validationSchema={Yup.object().shape({
