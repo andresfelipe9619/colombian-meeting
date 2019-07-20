@@ -67,9 +67,48 @@ export default function FormPage() {
             <form onSubmit={handleSubmit}>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
+                  <FormControl>
+                    <InputLabel htmlFor="tipoDocumento">
+                      Tipo de documento
+                    </InputLabel>
+                    <Select
+                      value={values.tipoDocumento}
+                      required
+                      onChange={handleChange}
+                      inputProps={{
+                        name: 'tipoDocumento',
+                        id: 'tipoDocumento',
+                      }}
+                    >
+                      <MenuItem value={'cc'}>C.C</MenuItem>
+                      <MenuItem value={'ti'}>T.I</MenuItem>
+                      <MenuItem value={'ext'}>Extranjero</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    value={values.numeroDocumento}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={
+                      touched.numeroDocumento && errors.numeroDocumento
+                    }
+                    error={
+                      !!(touched.numeroDocumento && errors.numeroDocumento)
+                    }
+                    required
+                    id="numeroDocumento"
+                    name="numeroDocumento"
+                    label="Número de Identificación"
+                    fullWidth
+                    autoComplete="billing numeroDocumento-line"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     id="nombre"
-                    label="First name"
+                    label="Nombre"
                     name="nombre"
                     value={values.nombre}
                     onChange={handleChange}
@@ -91,45 +130,9 @@ export default function FormPage() {
                     required
                     id="apellidos"
                     name="apellidos"
-                    label="Last name"
+                    label="Apellidos"
                     fullWidth
                     autoComplete="lname"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl>
-                    <InputLabel htmlFor="age-simple">Age</InputLabel>
-                    <Select
-                      value={values.tipoDocumento}
-                      onChange={handleChange}
-                      inputProps={{
-                        name: 'age',
-                        id: 'age-simple',
-                      }}
-                    >
-                      <MenuItem value={'c.c'}>C.C</MenuItem>
-                      <MenuItem value={'t.i'}>T.I</MenuItem>
-                      <MenuItem value={'ext'}>Extranjero</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    value={values.numeroDocumento}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={
-                      touched.numeroDocumento && errors.numeroDocumento
-                    }
-                    error={
-                      !!(touched.numeroDocumento && errors.numeroDocumento)
-                    }
-                    required
-                    id="numeroDocumento"
-                    name="numeroDocumento"
-                    label="numeroDocumento line "
-                    fullWidth
-                    autoComplete="billing numeroDocumento-line"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -142,7 +145,7 @@ export default function FormPage() {
                     required
                     id="universidad"
                     name="universidad"
-                    label="universidad"
+                    label="Universidad"
                     fullWidth
                     autoComplete="billing numeroDocumento-level2"
                   />
@@ -170,7 +173,7 @@ export default function FormPage() {
                     required
                     id="direccion"
                     name="direccion"
-                    label="Direccion"
+                    label="Dirección"
                     fullWidth
                     autoComplete="billing address"
                   />
@@ -185,9 +188,24 @@ export default function FormPage() {
                     required
                     id="telefono"
                     name="telefono"
-                    label="telefono"
+                    label="Teléfono"
                     fullWidth
                     autoComplete="billing telefono"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    value={values.ciudad}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={touched.ciudad && errors.ciudad}
+                    error={!!(touched.ciudad && errors.ciudad)}
+                    required
+                    id="ciudad"
+                    name="ciudad"
+                    label="Ciudad"
+                    fullWidth
+                    autoComplete="billing ciudad"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -197,28 +215,30 @@ export default function FormPage() {
                     onBlur={handleBlur}
                     helperText={touched.celular && errors.celular}
                     error={!!(touched.celular && errors.celular)}
-                    required
                     id="celular"
                     name="celular"
-                    label="celular"
+                    label="Celular"
                     fullWidth
                     autoComplete="billing celular"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <FormControl>
-                    <InputLabel htmlFor="age-simple">Age</InputLabel>
+                    <InputLabel htmlFor="tematicaPonencia">
+                      Línea temática de ponencia
+                    </InputLabel>
                     <Select
+                      required
                       value={values.tematicaPonencia}
                       onChange={handleChange}
                       inputProps={{
-                        name: 'age',
-                        id: 'age-simple',
+                        name: 'tematicaPonencia',
+                        id: 'tematicaPonencia',
                       }}
                     >
-                      <MenuItem value={10}>Ten</MenuItem>
-                      <MenuItem value={20}>Twenty</MenuItem>
-                      <MenuItem value={30}>Thirty</MenuItem>
+                      <MenuItem value={10}>Gestión Cultural</MenuItem>
+                      <MenuItem value={20}>Ingeniería</MenuItem>
+                      <MenuItem value={30}>Otros</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -237,13 +257,12 @@ export default function FormPage() {
                       )
                     }
                     multiline
-                    rowsMax="4"
+                    rows="4"
                     required
                     id="descripcionPonencia"
                     name="descripcionPonencia"
-                    label="descripcionPonencia"
+                    label="Descripción general de la ponencia: Redactar en máximo 300 palabras"
                     fullWidth
-                    autoComplete="billing descripcionPonencia"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -258,13 +277,12 @@ export default function FormPage() {
                       !!(touched.importanciaTema && errors.importanciaTema)
                     }
                     multiline
-                    rowsMax="4"
                     required
+                    rows="4"
                     id="importanciaTema"
                     name="importanciaTema"
-                    label="importanciaTema"
+                    label="Importancia del tema para la institución: Redactar en máximo 500 caracteres"
                     fullWidth
-                    autoComplete="billing importanciaTema"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -276,20 +294,34 @@ export default function FormPage() {
                     error={!!(touched.motivosInteres && errors.motivosInteres)}
                     required
                     multiline
-                    rowsMax="4"
+                    rows="4"
                     id="motivosInteres"
                     name="motivosInteres"
-                    label="motivosInteres"
+                    label="Motivos de interés para otras instituciones de educación superior: Redactar en máximo 300 caracteres"
                     fullWidth
-                    autoComplete="billing motivosInteres"
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <p>Files</p>
-                  <Dropzone />
+                  <FormControl>
+                    <InputLabel>
+                      Archivo Word a subir debe cargarse como DOcumentos WORD
+                      2007 y seguir las especificaciones técnicas que se indican
+                      en la pestaña de descargas
+                    </InputLabel>
+                    <Dropzone />
+                  </FormControl>
                 </Grid>
                 <Grid item xs={12}>
-                  <p>lorem</p>
+                  <InputLabel>
+                    El Comité organizador seleccionará las ponencias que se
+                    presentarán en el IV Encuentro Colombiano de Gestíon
+                    Universitaria. Dentri de los criterios de la aprobación
+                    están: La pertinencia del tema, la relación con las líneas
+                    temáticas, la importancia e interés para las Instituciones
+                    de Educación Superior; también se valorarán las buenas
+                    prácticas y casos de éxito para el mejoramiento de la
+                    gestión universitaria.
+                  </InputLabel>
                 </Grid>
                 <Button variant="contained" type="submit" color="primary">
                   Enviar
