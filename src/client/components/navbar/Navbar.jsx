@@ -1,9 +1,7 @@
 import React, {useCallback} from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import {ShoppingCart, Favorite} from '@material-ui/icons';
 import useStyles from './styles';
 import {withRouter} from 'react-router-dom';
 
@@ -24,7 +22,7 @@ function Navbar(props) {
             noWrap
             onClick={goTo('/')}
           >
-            Encuentro Colombiano
+            Encuentro Colombiano De Gestión Universitaria
           </Typography>
           <div className={classes.grow} />
         </Toolbar>
