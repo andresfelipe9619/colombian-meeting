@@ -14,75 +14,6 @@ function createHtmlTemplate(filename) {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
 }
 
-// function include(filename) {
-//   return HtmlService.createHtmlOutputFromFile(filename).getContent();
-// }
-
-// function doPost(request) {
-//   Logger.log('request');
-//   Logger.log(request);
-
-//   if (typeof request != 'undefined') {
-//     Logger.log(request);
-//     let params = request.parameter;
-//     Logger.log('params');
-//     Logger.log(params);
-//     return ContentService.createTextOutput(JSON.stringify(request.parameter));
-//   }
-// }
-
-function validateUserSession() {
-  const guess_email = Session.getActiveUser().getEmail();
-  const admins = [
-    'suarez.andres@correounivalle.edu.co',
-    'samuel.ramirez@correounivalle.edu.co',
-  ];
-  return admins.include(guess_email);
-}
-
-function readRequestParameter(request) {
-  let validQueries = ['student', 'student_r', 'professional', 'professional_r'];
-  if (typeof request !== 'undefined') {
-    let params = request.parameter;
-    Logger.log(params.attendant);
-    return validQueries.indexOf(params.attendant) > -1;
-  }
-}
-
-const getSheets = () => SpreadsheetApp.getActive().getSheets();
-
-const getActiveSheetName = () => SpreadsheetApp.getActive().getSheetName();
-
-const getSheetsData = () => {
-  let activeSheetName = getActiveSheetName();
-  return getSheets().map((sheet, index) => {
-    let sheetName = sheet.getName();
-    return {
-      text: sheetName,
-      sheetIndex: index,
-      isActive: sheetName === activeSheetName,
-    };
-  });
-};
-
-const addSheet = (sheetTitle) => {
-  SpreadsheetApp.getActive().insertSheet(sheetTitle);
-  return getSheetsData();
-};
-
-const deleteSheet = (sheetIndex) => {
-  let sheets = getSheets();
-  SpreadsheetApp.getActive().deleteSheet(sheets[sheetIndex]);
-  return getSheetsData();
-};
-
-const setActiveSheet = (sheetName) => {
-  SpreadsheetApp.getActive()
-    .getSheetByName(sheetName)
-    .activate();
-  return getSheetsData();
-};
-
 function getPeopleRegistered() {
   let peopleSheet = getRawDataFromSheet(GENERAL_DB, 'INSCRITOS');
   let peopleObjects = sheetValuesToObject(peopleSheet);
@@ -142,29 +73,7 @@ function registerPerson(person) {
   inscritosSheet.appendRow(finalValues);
   let result = {data: nicePerson, ok: true};
   logFunctionOutput(registerPerson.name, result);
-  if (personValues[5].toLowerCase() !== 'colombia') {
-    sendInternationalMail(nicePerson);
-  }
   return result;
-}
-
-function changePonencia(index, value) {
-  let inscritosSheet = getSheetFromSpreadSheet(GENERAL_DB, 'INSCRITOS');
-  let headers = inscritosSheet.getSheetValues(
-    1,
-    1,
-    1,
-    inscritosSheet.getLastColumn()
-  )[0];
-  let pagoIndex = headers.indexOf('ACEPTA_PONENCIA');
-  Logger.log(pagoIndex);
-  Logger.log(index);
-  logFunctionOutput(
-    generatePayment.name,
-    inscritosSheet.getRange(index, pagoIndex).getValues()
-  );
-  inscritosSheet.getRange(index + 1, pagoIndex + 1).setValues([[value]]);
-  return true;
 }
 
 function validatePerson(cedula) {
@@ -184,37 +93,6 @@ function validatePerson(cedula) {
       result.isRegistered = true;
       result.index = person;
       result.data = inscritos[person];
-      // if (
-      //   ((String(inscritos[person].hora_ingreso).length > 0.0 &&
-      //     String(inscritos[person].hora_ingreso) !== '-') ||
-      //     (String(inscritos[person].hora_ingreso_viernes).length > 0.0 &&
-      //       String(inscritos[person].hora_ingreso_viernes) !== '-')) &&
-      //   String(inscritos[person].pago_comprobado) == 'SI'
-      // ) {
-      //   while (certificados_asistencia.hasNext()) {
-      //     let certificado = certificados_asistencia.next();
-      //     if (certificado.getName().split('-')[0] == cedula) {
-      //       let arcDesc = Drive.Files.get(certificado.getId());
-      //       result.cert_asist = arcDesc.webContentLink;
-      //       break;
-      //     }
-      //   }
-      // }
-      // if (
-      //   String(inscritos[person].ponencia_file).length > 0.0 &&
-      //   String(inscritos[person].ponencia_file) !== '-'
-      // ) {
-      //   while (certificados_ponencia.hasNext()) {
-      //     let certificadoP = certificados_ponencia.next();
-      //     if (certificadoP.getName().split('-')[0] == cedula) {
-      //       let certDesc = Drive.Files.get(certificadoP.getId());
-      //       Logger.log('Link ponencia');
-      //       Logger.log(certDesc.webContentLink);
-      //       result.cert_ponen = certDesc.webContentLink;
-      //       break;
-      //     }
-      //   }
-      // }
     }
   }
   logFunctionOutput(validatePerson.name, result);
@@ -280,30 +158,6 @@ function createPersonFile(name, numdoc, data) {
   return result;
 }
 
-function createPersonFolder(numdoc, data) {
-  let res = createPersonFile('DOCUMENTO', numdoc, data);
-  return res;
-}
-
-function createPaymentFile(numdoc, data) {
-  let res = createPersonFile('PAY', numdoc, data);
-  return res;
-}
-function generatePayment(index, numdoc, file) {
-  let inscritosSheet = getSheetFromSpreadSheet(GENERAL_DB, 'INSCRITOS');
-  let headers = inscritosSheet.getSheetValues(
-    1,
-    1,
-    1,
-    inscritosSheet.getLastColumn()
-  )[0];
-  let pagoIndex = headers.indexOf('PAY_FILE');
-  let mfile = createPaymentFile(numdoc, file);
-  // logFunctionOutput(generatePayment.name, inscritosSheet.getRange(index, pagoIndex).getValues())
-  inscritosSheet.getRange(index + 1, pagoIndex + 1).setValues([[mfile.url]]);
-  return true;
-}
-
 function createPonenciaFile(numdoc, data) {
   let res = createPersonFile('PONENCIA', numdoc, data);
   return res;
@@ -339,8 +193,7 @@ function objectToSheetValues(object, headers) {
           object[item].name == 'nombres' ||
           object[item].name == 'apellidos' ||
           object[item].name == 'institucion' ||
-          object[item].name == 'nombre_ponencia' ||
-          object[item].name.indexOf('autor') !== -1
+          object[item].name == 'nombre_ponencia'
         ) {
           arrayValues[header] = object[item].value.toUpperCase();
           Logger.log(arrayValues);
@@ -401,11 +254,4 @@ function sendEmail(subject, body, person) {
   }
 }
 
-export {
-  doGet,
-  getSheetsData,
-  addSheet,
-  deleteSheet,
-  setActiveSheet,
-  searchPerson,
-};
+export {doGet, searchPerson, createPonenciaFile, registerPerson};
