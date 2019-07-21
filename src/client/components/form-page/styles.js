@@ -2,13 +2,18 @@ import {makeStyles} from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%',
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 200,
   },
   paper: {
-    padding: theme.spacing(3, 2),
+    padding: theme.spacing(6, 4),
   },
   select: {
-    width: '100%',
+    flex: '0 0 auto',
   },
   button: {
     margin: '30px 40px',

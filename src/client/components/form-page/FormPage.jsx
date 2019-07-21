@@ -1,6 +1,4 @@
-import React, {useEffect} from 'react';
-import * as Yup from 'yup';
-import {Formik} from 'formik';
+import React, {useEffect, useCallback} from 'react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -8,18 +6,27 @@ import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
+import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
 import Dropzone from '../dropzone/Dropzone';
+import {Formik} from 'formik';
 import server from '../../server';
 import useStyles from './styles';
-const FILE_SIZE = 160 * 1024;
-const SUPPORTED_FORMATS = [
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-];
+import {
+  SUPPORTED_FORMATS,
+  validationSchema,
+  initialValues,
+} from './form-settings';
 export default function FormPage() {
   const classes = useStyles();
   const {searchPerson} = server;
+
+  const onSubmit = useCallback((values, {setSubmitting}) => {
+    setSubmitting(true);
+    console.log('SUBMIT VALUES', values);
+    setTimeout(() => setSubmitting(false), 2000);
+  }, []);
 
   useEffect(() => {
     searchPerson('123').then((data) => console.log('data', data));
@@ -34,88 +41,37 @@ export default function FormPage() {
         Los campos marcados con asteriscos (*) son obligatorios.{' '}
       </Typography>
       <Formik
-        initialValues={{
-          numeroDocumento: '',
-          tipoDocumento: '',
-          nombre: '',
-          apellidos: '',
-          universidad: '',
-          email: '',
-          direccion: '',
-          telefono: '',
-          ciudad: '',
-          celular: '',
-          archivoPonencia: undefined,
-          tematicaPonencia: '',
-          descripcionPonencia: '',
-          importanciaTema: '',
-          motivosInteres: '',
-        }}
-        onSubmit={(values, {setSubmitting}) => {
-          setSubmitting(true);
-          console.log('values', values);
-          setTimeout(() => setSubmitting(false), 2000);
-        }}
-        validationSchema={Yup.object().shape({
-          nombre: Yup.string().required('Campo Obligatorio'),
-          apellidos: Yup.string().required('Campo Obligatorio'),
-          universidad: Yup.string().required('Campo Obligatorio'),
-          email: Yup.string()
-            .required('Campo Obligatorio')
-            .email('Ingrese un correo válido'),
-          tematicaPonencia: Yup.string().required('Campo Obligatorio'),
-          descripcionPonencia: Yup.string()
-            .required('Campo Obligatorio')
-            .max(300, 'Limite de 300 caracteres'),
-          importanciaTema: Yup.string()
-            .required('Campo Obligatorio')
-            .max(500, 'Limite de 500 caracteres'),
-          motivosInteres: Yup.string()
-            .required('Campo Obligatorio')
-            .max(300, 'Limite de 300 caracteres'),
-          archivoPonencia: Yup.mixed()
-            .required('Es requerido el archivo')
-            .test(
-              'fileSize',
-              'Archivo muy grande',
-              (value) => value && value.size <= FILE_SIZE
-            )
-            .test(
-              'fileFormat',
-              'Formato no soportado',
-              (value) => value && SUPPORTED_FORMATS.includes(value.type)
-            ),
-        })}
+        onSubmit={onSubmit}
+        initialValues={initialValues}
+        validationSchema={validationSchema}
       >
         {(formikProps) => {
           const {
             values,
             touched,
             errors,
-            handleChange,
             handleBlur,
+            handleChange,
             handleSubmit,
+            setFieldValue,
           } = formikProps;
           return (
             <Paper className={classes.paper}>
               <form onSubmit={handleSubmit}>
-                <Grid container spacing={3}>
+                <Grid container spacing={6}>
                   <Grid item xs={12} sm={6}>
                     <FormControl>
                       <InputLabel htmlFor="tipoDocumento">
                         Tipo de documento
                       </InputLabel>
                       <Select
-                        id="tipoDocumento"
-                        name="tipoDocumento"
                         value={values.tipoDocumento}
                         required
                         fullWidth
-                        // fullWidth
-                        // className={{
-                        //   root: classes.root,
-                        //   select: classes.select,
-                        // }}
+                        className={{
+                          root: classes.root,
+                          select: classes.select,
+                        }}
                         onChange={handleChange}
                         inputProps={{
                           name: 'tipoDocumento',
@@ -278,9 +234,8 @@ export default function FormPage() {
                         Línea temática de ponencia
                       </InputLabel>
                       <Select
-                        id="tematicaPonencia"
-                        name="tematicaPonencia"
                         required
+                        fullWidth
                         className={{
                           root: classes.root,
                           select: classes.select,
@@ -362,8 +317,9 @@ export default function FormPage() {
                       fullWidth
                     />
                   </Grid>
+                  <Divider variant="middle" />
                   <Grid container item xs={12}>
-                    <Grid item xs={6}>
+                    <Grid item xs={12}>
                       <InputLabel htmlFor="archivoPonencia">
                         Archivo Word a subir debe cargarse como Documentos WORD
                         2007 y seguir las especificaciones técnicas que se
@@ -372,7 +328,9 @@ export default function FormPage() {
                     </Grid>
                     <Grid item xs={6}>
                       <Dropzone
+                        values={values}
                         accept={SUPPORTED_FORMATS}
+                        setFieldValue={setFieldValue}
                         error={
                           !!(touched.archivoPonencia && errors.archivoPonencia)
                         }
@@ -382,7 +340,8 @@ export default function FormPage() {
                       />
                     </Grid>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Divider variant="middle" />
+                  <Grid item xs={6}>
                     <Typography variant="body2">
                       El Comité organizador seleccionará las ponencias que se
                       presentarán en el IV Encuentro Colombiano de Gestíon

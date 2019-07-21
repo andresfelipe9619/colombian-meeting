@@ -1,6 +1,5 @@
 // Use ES6/7 code
 const ROOT_FOLDER = 'ENCUENTRO COLOMBIANO';
-const REQUEST_PAYLOAD = null;
 const GENERAL_DB =
   'https://docs.google.com/spreadsheets/d/1OG6EPZzzVq_P2KjQ6kDcsJ0YmMlwSYwcZ-Xqb4LeOFo/edit#gid=0';
 
