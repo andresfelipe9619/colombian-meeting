@@ -1,6 +1,6 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useCallback} from 'react';
 import Dropzone from 'react-dropzone';
-
+import Thumb from './Thumb';
 export default function CustomDropzone({
   error,
   accept,
@@ -11,20 +11,28 @@ export default function CustomDropzone({
 }) {
   const onDrop = useCallback((acceptedFiles) => {
     if (!acceptedFiles.length) return;
-    setFieldValue('archivoPonencia', acceptedFiles[0]);
+    setFieldValue('archivo_ponencia', acceptedFiles[0]);
   }, []);
 
   const style = {
     borderStyle: 'dashed',
     borderColor: error ? 'red' : 'black',
   };
+  console.log('props', {
+    error,
+    accept,
+    values,
+    disabled,
+    setFieldValue,
+    helperText,
+  });
   return (
     <Dropzone onDrop={onDrop} accept={accept} disabled={disabled}>
       {({getRootProps, getInputProps, isDragActive}) => (
         <div style={style} {...getRootProps()}>
           <input
-            id="archivoPonencia"
-            name="archivoPonencia"
+            id="archivo_ponencia"
+            name="archivo_ponencia"
             {...getInputProps()}
           />
 
@@ -32,48 +40,16 @@ export default function CustomDropzone({
             <p>{helperText}</p>
           ) : isDragActive ? (
             <p>Arrastra los archivos acá ...</p>
-          ) : !values || !values.archivoPonencia ? (
+          ) : !values || !values.archivo_ponencia ? (
             <p>
               Arrastra y suelta tu archivo aquí, o haz clic para seleccionar un
               archivo
             </p>
           ) : (
-            <Thumb file={values.archivoPonencia} />
+            <Thumb file={values.archivo_ponencia} />
           )}
         </div>
       )}
     </Dropzone>
-  );
-}
-
-function Thumb({file}) {
-  const [loading, setLoading] = useState(false);
-  const [thumb, setThumb] = useState(undefined);
-
-  useEffect(() => {
-    if (!file) return;
-    setLoading(true);
-    let reader = new FileReader();
-
-    reader.onloadend = () => {
-      setLoading(false);
-      setThumb(reader.result);
-    };
-
-    reader.readAsDataURL(file);
-  });
-
-  if (!file) return null;
-
-  if (loading) return <p>loading...</p>;
-
-  return (
-    <img
-      src={thumb}
-      alt={file.name}
-      className="img-thumbnail mt-2"
-      height={200}
-      width={200}
-    />
   );
 }

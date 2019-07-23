@@ -26,7 +26,11 @@ function searchPerson(cedula) {
   return person;
 }
 
-function registerPerson(person) {
+function registerPerson(data) {
+  let person = JSON.parse(data);
+  logFunctionOutput('DATA', data);
+  logFunctionOutput('PERSON', person);
+
   let inscritosSheet = getSheetFromSpreadSheet(GENERAL_DB, 'INSCRITOS');
   let headers = inscritosSheet.getSheetValues(
     1,
@@ -34,31 +38,11 @@ function registerPerson(person) {
     1,
     inscritosSheet.getLastColumn()
   )[0];
-  person.push({
-    name: 'hora_registro',
-    value: new Date().toLocaleDateString(),
-  });
-  let payIndex = -1;
-  for (let i in person) {
-    if (person[i] && person[i]['name'] === 'pay_file') {
-      payIndex = i;
-    }
-  }
+  person.hora_registro = new Date().toLocaleDateString();
 
-  if (
-    payIndex === -1 ||
-    (payIndex !== -1 && !person[payIndex].value.length > 3)
-  ) {
-    person.push({name: 'pay_file', value: '-'});
-  }
-  person.push({name: 'pago_comprobado', value: '-'});
-
-  logFunctionOutput('person', person);
-
-  let personValues = objectToSheetValues(person, headers);
-  let finalValues = personValues.map(function(value) {
-    return String(value);
-  });
+  let personValues = jsonToSheetValues(person, headers);
+  logFunctionOutput('personValues', personValues);
+  let finalValues = personValues.map(String);
   let nicePerson = {
     cedula: personValues[2],
     nombres: personValues[0],
@@ -179,31 +163,27 @@ function getRawDataFromSheet(url, sheet) {
   }
 }
 
-function objectToSheetValues(object, headers) {
+function jsonToSheetValues(json, headers) {
   let arrayValues = new Array(headers.length);
-  let lowerHeaders = headers.map(function(item) {
-    return item.toLowerCase();
-  });
+  let lowerHeaders = headers.map((item) => item.toLowerCase());
 
-  for (let item in object) {
+  for (let key in json) {
     for (let header in lowerHeaders) {
-      if (String(object[item].name) == String(lowerHeaders[header])) {
-        if (
-          object[item].name == 'nombres' ||
-          object[item].name == 'apellidos' ||
-          object[item].name == 'institucion' ||
-          object[item].name == 'nombre_ponencia'
-        ) {
-          arrayValues[header] = object[item].value.toUpperCase();
-          Logger.log(arrayValues);
+      logFunctionOutput('JSON TO SHEET', {
+        key: json[key],
+        header: lowerHeaders[header],
+      });
+
+      if (key == String(lowerHeaders[header])) {
+        if (key == 'nombre' || key == 'apellidos') {
+          arrayValues[header] = json[key].toUpperCase();
         } else {
-          arrayValues[header] = object[item].value;
-          Logger.log(arrayValues);
+          arrayValues[header] = json[key];
         }
       }
     }
   }
-  // logFunctionOutput(objectToSheetValues.name, arrayValues)
+  // logFunctionOutput(jsonToSheetValues.name, arrayValues)
   return arrayValues;
 }
 

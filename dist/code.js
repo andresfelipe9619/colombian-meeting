@@ -1,16 +1,10 @@
-function onOpen() {
-}
 function doGet() {
 }
 function searchPerson() {
 }
-function getSheetsData() {
+function createPonenciaFile() {
 }
-function addSheet() {
-}
-function deleteSheet() {
-}
-function setActiveSheet() {
+function registerPerson() {
 }!function(e, a) {
     for (var i in a) e[i] = a[i];
 }(this, function(modules) {
@@ -60,44 +54,20 @@ function setActiveSheet() {
     }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 1);
 }([ function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
-    __webpack_require__.d(__webpack_exports__, "c", function() {
+    __webpack_require__.d(__webpack_exports__, "b", function() {
         return doGet;
     }), __webpack_require__.d(__webpack_exports__, "d", function() {
-        return getSheetsData;
-    }), __webpack_require__.d(__webpack_exports__, "a", function() {
-        return addSheet;
-    }), __webpack_require__.d(__webpack_exports__, "b", function() {
-        return deleteSheet;
-    }), __webpack_require__.d(__webpack_exports__, "g", function() {
-        return setActiveSheet;
-    }), __webpack_require__.d(__webpack_exports__, "f", function() {
         return searchPerson;
+    }), __webpack_require__.d(__webpack_exports__, "a", function() {
+        return createPonenciaFile;
+    }), __webpack_require__.d(__webpack_exports__, "c", function() {
+        return registerPerson;
     });
-    var GENERAL_DB = "https://docs.google.com/spreadsheets/d/1OG6EPZzzVq_P2KjQ6kDcsJ0YmMlwSYwcZ-Xqb4LeOFo/edit#gid=0";
+    var ROOT_FOLDER = "ENCUENTRO COLOMBIANO", GENERAL_DB = "https://docs.google.com/spreadsheets/d/1OG6EPZzzVq_P2KjQ6kDcsJ0YmMlwSYwcZ-Xqb4LeOFo/edit#gid=0";
     function doGet(request) {
         return filename = "index.html", HtmlService.createHtmlOutputFromFile(filename).setTitle("Encuentro Colombiano").setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
         var filename;
     }
-    var getSheets = function() {
-        return SpreadsheetApp.getActive().getSheets();
-    }, getSheetsData = function() {
-        var activeSheetName = SpreadsheetApp.getActive().getSheetName();
-        return getSheets().map(function(sheet, index) {
-            var sheetName = sheet.getName();
-            return {
-                text: sheetName,
-                sheetIndex: index,
-                isActive: sheetName === activeSheetName
-            };
-        });
-    }, addSheet = function(sheetTitle) {
-        return SpreadsheetApp.getActive().insertSheet(sheetTitle), getSheetsData();
-    }, deleteSheet = function(sheetIndex) {
-        var sheets = getSheets();
-        return SpreadsheetApp.getActive().deleteSheet(sheets[sheetIndex]), getSheetsData();
-    }, setActiveSheet = function(sheetName) {
-        return SpreadsheetApp.getActive().getSheetByName(sheetName).activate(), getSheetsData();
-    };
     function getPeopleRegistered() {
         return function(sheetValues, headers) {
             var headings = headers || sheetValues[0].map(String.toLowerCase), people = null;
@@ -119,6 +89,39 @@ function setActiveSheet() {
         var person = validatePerson(cedula);
         return logFunctionOutput(searchPerson.name, person), person;
     }
+    function registerPerson(data) {
+        var person = JSON.parse(data);
+        logFunctionOutput("DATA", data), logFunctionOutput("PERSON", person);
+        var inscritosSheet = getSheetFromSpreadSheet(GENERAL_DB, "INSCRITOS"), headers = inscritosSheet.getSheetValues(1, 1, 1, inscritosSheet.getLastColumn())[0];
+        person.hora_registro = new Date().toLocaleDateString();
+        var personValues = function(json, headers) {
+            var arrayValues = new Array(headers.length), lowerHeaders = headers.map(function(item) {
+                return item.toLowerCase();
+            });
+            for (var key in json) for (var header in lowerHeaders) logFunctionOutput("JSON TO SHEET", {
+                key: json[key],
+                header: lowerHeaders[header]
+            }), key == String(lowerHeaders[header]) && (arrayValues[header] = "nombre" == key || "apellidos" == key ? json[key].toUpperCase() : json[key]);
+            return arrayValues;
+        }(person, headers);
+        logFunctionOutput("personValues", personValues);
+        var finalValues = personValues.map(String), nicePerson = {
+            cedula: personValues[2],
+            nombres: personValues[0],
+            apellidos: personValues[1],
+            email: personValues[3],
+            pago_total: personValues[8],
+            concepto_pago: personValues[7],
+            dependecia: "COGESTEC 2019",
+            telefono: personValues[4]
+        };
+        inscritosSheet.appendRow(finalValues);
+        var result = {
+            data: nicePerson,
+            ok: !0
+        };
+        return logFunctionOutput(registerPerson.name, result), result;
+    }
     function validatePerson(cedula) {
         var inscritos = getPeopleRegistered(), result = {
             isRegistered: !1,
@@ -132,6 +135,20 @@ function setActiveSheet() {
         return logFunctionOutput(validatePerson.name, result), result.index < 0 && (result.isRegistered = !1), 
         JSON.stringify(result);
     }
+    function createPersonFile(name, numdoc, data) {
+        var dropbox, folders, result = {
+            url: "",
+            file: ""
+        }, currentFolder = function(name, mainFolder) {
+            var FolderFiles, folders = mainFolder.getFoldersByName("documentos"), mFolders = (FolderFiles = folders.hasNext() ? folders.next() : mainFolder.createFolder("documentos")).getFoldersByName(name);
+            return mFolders.hasNext() ? mFolders.next() : FolderFiles.createFolder(name);
+        }(numdoc, (dropbox = ROOT_FOLDER, (folders = DriveApp.getFoldersByName(dropbox)).hasNext() ? folders.next() : DriveApp.createFolder(dropbox))), contentType = data.substring(5, data.indexOf(";")), bytes = Utilities.base64Decode(data.substr(data.indexOf("base64,") + 7)), blob = Utilities.newBlob(bytes, contentType, file), file = currentFolder.createFile(blob);
+        return file.setDescription("Subido Por " + numdoc), file.setName(numdoc + "_" + name), 
+        result.url = file.getUrl(), result.file = file.getName(), result;
+    }
+    function createPonenciaFile(numdoc, data) {
+        return createPersonFile("PONENCIA", numdoc, data);
+    }
     function getSheetFromSpreadSheet(url, sheet) {
         var Spreedsheet = SpreadsheetApp.openByUrl(url);
         if (url && sheet) return Spreedsheet.getSheetByName(sheet);
@@ -144,10 +161,9 @@ function setActiveSheet() {
     "use strict";
     __webpack_require__.r(__webpack_exports__), function(global) {
         var _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
-        global.onOpen = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["onOpen"], global.doGet = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["c"], 
-        global.searchPerson = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["f"], global.getSheetsData = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["d"], 
-        global.addSheet = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["a"], global.deleteSheet = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["b"], 
-        global.setActiveSheet = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["g"];
+        global.doGet = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["b"], global.searchPerson = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["d"], 
+        global.createPonenciaFile = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["a"], 
+        global.registerPerson = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["c"];
     }.call(this, __webpack_require__(2));
 }, function(module, exports) {
     var g;
