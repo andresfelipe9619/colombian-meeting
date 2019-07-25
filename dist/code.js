@@ -98,10 +98,7 @@ function registerPerson() {
             var arrayValues = new Array(headers.length), lowerHeaders = headers.map(function(item) {
                 return item.toLowerCase();
             });
-            for (var key in json) for (var header in lowerHeaders) logFunctionOutput("JSON TO SHEET", {
-                key: json[key],
-                header: lowerHeaders[header]
-            }), key == String(lowerHeaders[header]) && (arrayValues[header] = "nombre" == key || "apellidos" == key ? json[key].toUpperCase() : json[key]);
+            for (var key in json) for (var header in lowerHeaders) key == String(lowerHeaders[header]) && (arrayValues[header] = "nombre" == key || "apellidos" == key ? json[key].toUpperCase() : json[key]);
             return arrayValues;
         }(person, headers);
         logFunctionOutput("personValues", personValues);

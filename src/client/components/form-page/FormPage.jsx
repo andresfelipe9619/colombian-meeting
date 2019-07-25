@@ -27,13 +27,17 @@ export default function FormPage() {
   const {searchPerson, registerPerson, createPonenciaFile} = server;
 
   const onSubmit = useCallback(async (values, {setSubmitting}) => {
-    const {archivo_ponencia, ...formData} = values;
+    const {archivo_ponencia, numero_documento, ...formData} = values;
     setSubmitting(true);
     console.log('SUBMIT VALUES', values);
     try {
-      // await createPonenciaFile(archivo_ponencia);
       setIsLoading(true);
-      await registerPerson(JSON.stringify(formData));
+      const result = await createPonenciaFile(
+        numero_documento,
+        archivo_ponencia
+      );
+      console.log('result', result);
+      await registerPerson(JSON.stringify({...formData, numero_documento}));
       setIsSuccess(true);
     } catch (error) {
       setError(error);
@@ -288,8 +292,9 @@ export default function FormPage() {
                       disabled={isLoading || error}
                       onBlur={handleBlur}
                       helperText={
-                        touched.descripcion_ponencia &&
-                        errors.descripcion_ponencia
+                        (touched.descripcion_ponencia &&
+                          errors.descripcion_ponencia) ||
+                        'Redactar en máximo 300 caracteres'
                       }
                       error={
                         !!(
@@ -302,7 +307,7 @@ export default function FormPage() {
                       required
                       id="descripcion_ponencia"
                       name="descripcion_ponencia"
-                      label="Descripción general de la ponencia: Redactar en máximo 300 palabras"
+                      label="Descripción general de la ponencia"
                       fullWidth
                     />
                   </Grid>
@@ -313,7 +318,8 @@ export default function FormPage() {
                       disabled={isLoading || error}
                       onBlur={handleBlur}
                       helperText={
-                        touched.importancia_tema && errors.importancia_tema
+                        (touched.importancia_tema && errors.importancia_tema) ||
+                        'Redactar en máximo 500 caracteres'
                       }
                       error={
                         !!(touched.importancia_tema && errors.importancia_tema)
@@ -323,7 +329,7 @@ export default function FormPage() {
                       rows="4"
                       id="importancia_tema"
                       name="importancia_tema"
-                      label="Importancia del tema para la institución: Redactar en máximo 500 caracteres"
+                      label="Importancia del tema para la institución"
                       fullWidth
                     />
                   </Grid>
@@ -334,7 +340,8 @@ export default function FormPage() {
                       disabled={isLoading || error}
                       onBlur={handleBlur}
                       helperText={
-                        touched.motivos_interes && errors.motivos_interes
+                        (touched.motivos_interes && errors.motivos_interes) ||
+                        'Redactar en máximo 300 caracteres'
                       }
                       error={
                         !!(touched.motivos_interes && errors.motivos_interes)
@@ -344,7 +351,7 @@ export default function FormPage() {
                       rows="4"
                       id="motivos_interes"
                       name="motivos_interes"
-                      label="Motivos de interés para otras instituciones de educación superior: Redactar en máximo 300 caracteres"
+                      label="Motivos de interés para otras instituciones de educación superior"
                       fullWidth
                     />
                   </Grid>
@@ -376,7 +383,7 @@ export default function FormPage() {
                   </Grid>
                   <Divider variant="middle" />
                   <Grid item xs={12}>
-                    <Typography variant="body2">
+                    <Typography variant="body1">
                       El Comité organizador seleccionará las ponencias que se
                       presentarán en el IV Encuentro Colombiano de Gestíon
                       Universitaria. Dentri de los criterios de la aprobación

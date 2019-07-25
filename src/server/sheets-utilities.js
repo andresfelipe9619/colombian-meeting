@@ -169,11 +169,6 @@ function jsonToSheetValues(json, headers) {
 
   for (let key in json) {
     for (let header in lowerHeaders) {
-      logFunctionOutput('JSON TO SHEET', {
-        key: json[key],
-        header: lowerHeaders[header],
-      });
-
       if (key == String(lowerHeaders[header])) {
         if (key == 'nombre' || key == 'apellidos') {
           arrayValues[header] = json[key].toUpperCase();

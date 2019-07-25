@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import Dropzone from 'react-dropzone';
 import Thumb from './Thumb';
 export default function CustomDropzone({
@@ -9,23 +9,29 @@ export default function CustomDropzone({
   setFieldValue,
   helperText,
 }) {
+  const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState(null);
+
   const onDrop = useCallback((acceptedFiles) => {
     if (!acceptedFiles.length) return;
-    setFieldValue('archivo_ponencia', acceptedFiles[0]);
+    setLoading(true);
+    setFile(acceptedFiles[0]);
+    let reader = new FileReader();
+
+    reader.onloadend = () => {
+      setLoading(false);
+      setFieldValue('archivo_ponencia', reader.result);
+    };
+    // TODO: The form needs to receive a file object to validate,
+    // and then you can read it as url and send it to the back end as url string
+    reader.readAsDataURL(acceptedFiles[0]);
   }, []);
 
   const style = {
     borderStyle: 'dashed',
     borderColor: error ? 'red' : 'black',
   };
-  console.log('props', {
-    error,
-    accept,
-    values,
-    disabled,
-    setFieldValue,
-    helperText,
-  });
+
   return (
     <Dropzone onDrop={onDrop} accept={accept} disabled={disabled}>
       {({getRootProps, getInputProps, isDragActive}) => (
@@ -40,13 +46,13 @@ export default function CustomDropzone({
             <p>{helperText}</p>
           ) : isDragActive ? (
             <p>Arrastra los archivos acá ...</p>
-          ) : !values || !values.archivo_ponencia ? (
+          ) : !file ? (
             <p>
               Arrastra y suelta tu archivo aquí, o haz clic para seleccionar un
               archivo
             </p>
           ) : (
-            <Thumb file={values.archivo_ponencia} />
+            <Thumb file={file} loading={loading} />
           )}
         </div>
       )}

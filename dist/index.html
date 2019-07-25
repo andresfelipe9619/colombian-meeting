@@ -15858,20 +15858,8 @@
     }, {
         name: "MuiIcon"
     })(Icon_Icon);
-    function Thumb({file: file}) {
-        const [loading, setLoading] = Object(react["useState"])(!1), [thumb, setThumb] = Object(react["useState"])(undefined);
-        return Object(react["useEffect"])(() => {
-            if (!file) return;
-            setLoading(!0);
-            let reader = new FileReader();
-            reader.onloadend = (() => {
-                setLoading(!1), setThumb(reader.result);
-            }), reader.readAsDataURL(file);
-        }, [ file ]), console.log("THUMB", {
-            loading: loading,
-            thumb: thumb,
-            file: file
-        }), file ? loading ? react_default.a.createElement("p", null, "loading...") : react_default.a.createElement(react_default.a.Fragment, null, react_default.a.createElement(esm_Icon_Icon, null, "description"), react_default.a.createElement("p", null, "Nombre: ", file.name), react_default.a.createElement("p", null, "Tamaño: ", file.size)) : null;
+    function Thumb({file: file, loading: loading}) {
+        return file ? loading ? react_default.a.createElement("p", null, "Cargando Archivo...") : react_default.a.createElement(react_default.a.Fragment, null, react_default.a.createElement(esm_Icon_Icon, null, "description"), react_default.a.createElement("p", null, react_default.a.createElement("strong", null, "Nombre: "), " ", file.name), react_default.a.createElement("p", null, react_default.a.createElement("strong", null, "Tamaño: "), " ", file.size)) : null;
     }
     function Dropzone_extends() {
         return (Dropzone_extends = Object.assign || function(target) {
@@ -15883,20 +15871,18 @@
         }).apply(this, arguments);
     }
     function CustomDropzone({error: error, accept: accept, values: values, disabled: disabled, setFieldValue: setFieldValue, helperText: helperText}) {
-        const onDrop = Object(react["useCallback"])(acceptedFiles => {
-            acceptedFiles.length && setFieldValue("archivo_ponencia", acceptedFiles[0]);
+        const [loading, setLoading] = Object(react["useState"])(!1), [file, setFile] = Object(react["useState"])(null), onDrop = Object(react["useCallback"])(acceptedFiles => {
+            if (!acceptedFiles.length) return;
+            setLoading(!0), setFile(acceptedFiles[0]);
+            let reader = new FileReader();
+            reader.onloadend = (() => {
+                setLoading(!1), setFieldValue("archivo_ponencia", reader.result);
+            }), reader.readAsDataURL(acceptedFiles[0]);
         }, []), style = {
             borderStyle: "dashed",
             borderColor: error ? "red" : "black"
         };
-        return console.log("props", {
-            error: error,
-            accept: accept,
-            values: values,
-            disabled: disabled,
-            setFieldValue: setFieldValue,
-            helperText: helperText
-        }), react_default.a.createElement(es, {
+        return react_default.a.createElement(es, {
             onDrop: onDrop,
             accept: accept,
             disabled: disabled
@@ -15905,8 +15891,9 @@
         }, getRootProps()), react_default.a.createElement("input", Dropzone_extends({
             id: "archivo_ponencia",
             name: "archivo_ponencia"
-        }, getInputProps())), error ? react_default.a.createElement("p", null, helperText) : isDragActive ? react_default.a.createElement("p", null, "Arrastra los archivos acá ...") : values && values.archivo_ponencia ? react_default.a.createElement(Thumb, {
-            file: values.archivo_ponencia
+        }, getInputProps())), error ? react_default.a.createElement("p", null, helperText) : isDragActive ? react_default.a.createElement("p", null, "Arrastra los archivos acá ...") : file ? react_default.a.createElement(Thumb, {
+            file: file,
+            loading: loading
         }) : react_default.a.createElement("p", null, "Arrastra y suelta tu archivo aquí, o haz clic para seleccionar un archivo")));
     }
     var LinearProgress_LinearProgress = react_default.a.forwardRef(function(props, ref) {
@@ -17096,6 +17083,21 @@
         motivos_interes: yup_lib["string"]().required("Campo Obligatorio").max(300, "Limite de 300 caracteres"),
         archivo_ponencia: yup_lib["mixed"]().required("Es requerido el archivo").test("fileSize", "Archivo muy grande", value => value && value.size <= 163840).test("fileFormat", "Formato no soportado", value => value && SUPPORTED_FORMATS.includes(value.type))
     });
+    function FormPage_ownKeys(object, enumerableOnly) {
+        var keys = Object.keys(object);
+        return Object.getOwnPropertySymbols && keys.push.apply(keys, Object.getOwnPropertySymbols(object)), 
+        enumerableOnly && (keys = keys.filter(function(sym) {
+            return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+        })), keys;
+    }
+    function FormPage_defineProperty(obj, key, value) {
+        return key in obj ? Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: !0,
+            configurable: !0,
+            writable: !0
+        }) : obj[key] = value, obj;
+    }
     function FormPage_objectWithoutProperties(source, excluded) {
         if (null == source) return {};
         var key, i, target = function(source, excluded) {
@@ -17111,11 +17113,25 @@
         return target;
     }
     function FormPage() {
-        const classes = form_page_styles(), [isLoading, setIsLoading] = Object(react["useState"])(!1), [error, setError] = Object(react["useState"])(null), {searchPerson: searchPerson, registerPerson: registerPerson, createPonenciaFile: createPonenciaFile} = server, onSubmit = Object(react["useCallback"])(async (values, {setSubmitting: setSubmitting}) => {
-            const {archivo_ponencia: archivo_ponencia} = values, formData = FormPage_objectWithoutProperties(values, [ "archivo_ponencia" ]);
+        const classes = form_page_styles(), [isLoading, setIsLoading] = Object(react["useState"])(!1), [isSuccess, setIsSuccess] = Object(react["useState"])(!1), [error, setError] = Object(react["useState"])(null), {searchPerson: searchPerson, registerPerson: registerPerson, createPonenciaFile: createPonenciaFile} = server, onSubmit = Object(react["useCallback"])(async (values, {setSubmitting: setSubmitting}) => {
+            const {archivo_ponencia: archivo_ponencia, numero_documento: numero_documento} = values, formData = FormPage_objectWithoutProperties(values, [ "archivo_ponencia", "numero_documento" ]);
             setSubmitting(!0), console.log("SUBMIT VALUES", values);
             try {
-                setIsLoading(!0), await registerPerson(JSON.stringify(formData));
+                setIsLoading(!0);
+                const result = await createPonenciaFile(numero_documento, archivo_ponencia);
+                console.log("result", result), await registerPerson(JSON.stringify(function(target) {
+                    for (var i = 1; i < arguments.length; i++) {
+                        var source = null != arguments[i] ? arguments[i] : {};
+                        i % 2 ? FormPage_ownKeys(source, !0).forEach(function(key) {
+                            FormPage_defineProperty(target, key, source[key]);
+                        }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : FormPage_ownKeys(source).forEach(function(key) {
+                            Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+                        });
+                    }
+                    return target;
+                }({}, formData, {
+                    numero_documento: numero_documento
+                }))), setIsSuccess(!0);
             } catch (error) {
                 setError(error), console.error("Error trying to sumbit form:", error);
             } finally {
@@ -17366,14 +17382,14 @@
                 onChange: handleChange,
                 disabled: isLoading || error,
                 onBlur: handleBlur,
-                helperText: touched.descripcion_ponencia && errors.descripcion_ponencia,
+                helperText: touched.descripcion_ponencia && errors.descripcion_ponencia || "Redactar en máximo 300 caracteres",
                 error: !(!touched.descripcion_ponencia || !errors.descripcion_ponencia),
                 multiline: !0,
                 rows: "4",
                 required: !0,
                 id: "descripcion_ponencia",
                 name: "descripcion_ponencia",
-                label: "Descripción general de la ponencia: Redactar en máximo 300 palabras",
+                label: "Descripción general de la ponencia",
                 fullWidth: !0
             })), react_default.a.createElement(Grid_Grid, {
                 item: !0,
@@ -17384,14 +17400,14 @@
                 onChange: handleChange,
                 disabled: isLoading || error,
                 onBlur: handleBlur,
-                helperText: touched.importancia_tema && errors.importancia_tema,
+                helperText: touched.importancia_tema && errors.importancia_tema || "Redactar en máximo 500 caracteres",
                 error: !(!touched.importancia_tema || !errors.importancia_tema),
                 multiline: !0,
                 required: !0,
                 rows: "4",
                 id: "importancia_tema",
                 name: "importancia_tema",
-                label: "Importancia del tema para la institución: Redactar en máximo 500 caracteres",
+                label: "Importancia del tema para la institución",
                 fullWidth: !0
             })), react_default.a.createElement(Grid_Grid, {
                 item: !0,
@@ -17402,14 +17418,14 @@
                 onChange: handleChange,
                 disabled: isLoading || error,
                 onBlur: handleBlur,
-                helperText: touched.motivos_interes && errors.motivos_interes,
+                helperText: touched.motivos_interes && errors.motivos_interes || "Redactar en máximo 300 caracteres",
                 error: !(!touched.motivos_interes || !errors.motivos_interes),
                 required: !0,
                 multiline: !0,
                 rows: "4",
                 id: "motivos_interes",
                 name: "motivos_interes",
-                label: "Motivos de interés para otras instituciones de educación superior: Redactar en máximo 300 caracteres",
+                label: "Motivos de interés para otras instituciones de educación superior",
                 fullWidth: !0
             })), react_default.a.createElement(esm_Divider_Divider, {
                 variant: "middle"
@@ -17438,13 +17454,15 @@
                 item: !0,
                 xs: 12
             }, react_default.a.createElement(esm_Typography_Typography, {
-                variant: "body2"
+                variant: "body1"
             }, "El Comité organizador seleccionará las ponencias que se presentarán en el IV Encuentro Colombiano de Gestíon Universitaria. Dentri de los criterios de la aprobación están: La pertinencia del tema, la relación con las líneas temáticas, la importancia e interés para las Instituciones de Educación Superior; también se valorarán las buenas prácticas y casos de éxito para el mejoramiento de la gestión universitaria."), react_default.a.createElement(esm_Button_Button, {
                 className: classes.button,
                 variant: "contained",
                 type: "submit",
                 color: "primary"
-            }, "Enviar"), isLoading && react_default.a.createElement(esm_LinearProgress_LinearProgress, null)))));
+            }, "Enviar"), isSuccess && react_default.a.createElement(esm_Typography_Typography, {
+                variant: "h4"
+            }, "Formulario Enviado Satisfactoriamente"), isLoading && react_default.a.createElement(esm_LinearProgress_LinearProgress, null)))));
         }));
     }
     var CssBaseline_useStyles = styles_makeStyles(function(theme) {
