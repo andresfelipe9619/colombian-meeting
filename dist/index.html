@@ -15871,13 +15871,9 @@
         }).apply(this, arguments);
     }
     function CustomDropzone({error: error, accept: accept, values: values, disabled: disabled, setFieldValue: setFieldValue, helperText: helperText}) {
-        const [loading, setLoading] = Object(react["useState"])(!1), [file, setFile] = Object(react["useState"])(null), onDrop = Object(react["useCallback"])(acceptedFiles => {
-            if (!acceptedFiles.length) return;
-            setLoading(!0), setFile(acceptedFiles[0]);
-            let reader = new FileReader();
-            reader.onloadend = (() => {
-                setLoading(!1), setFieldValue("archivo_ponencia", reader.result);
-            }), reader.readAsDataURL(acceptedFiles[0]);
+        const [loading, setLoading] = Object(react["useState"])(!1), file = values.archivo_ponencia, onDrop = Object(react["useCallback"])(acceptedFiles => {
+            acceptedFiles.length && (setLoading(!0), setFieldValue("archivo_ponencia", acceptedFiles[0]), 
+            setLoading(!1));
         }, []), style = {
             borderStyle: "dashed",
             borderColor: error ? "red" : "black"
@@ -15891,10 +15887,10 @@
         }, getRootProps()), react_default.a.createElement("input", Dropzone_extends({
             id: "archivo_ponencia",
             name: "archivo_ponencia"
-        }, getInputProps())), error ? react_default.a.createElement("p", null, helperText) : isDragActive ? react_default.a.createElement("p", null, "Arrastra los archivos acá ...") : file ? react_default.a.createElement(Thumb, {
+        }, getInputProps())), error && react_default.a.createElement("p", null, helperText), isDragActive && !error && react_default.a.createElement("p", null, "Arrastra los archivos acá ..."), !file && !error && react_default.a.createElement("p", null, "Arrastra y suelta tu archivo aquí, o haz clic para seleccionar un archivo"), file && react_default.a.createElement(Thumb, {
             file: file,
             loading: loading
-        }) : react_default.a.createElement("p", null, "Arrastra y suelta tu archivo aquí, o haz clic para seleccionar un archivo")));
+        })));
     }
     var LinearProgress_LinearProgress = react_default.a.forwardRef(function(props, ref) {
         var classes = props.classes, classNameProp = props.className, _props$color = props.color, color = void 0 === _props$color ? "primary" : _props$color, theme = props.theme, value = props.value, valueBuffer = props.valueBuffer, _props$variant = props.variant, variant = void 0 === _props$variant ? "indeterminate" : _props$variant, other = objectWithoutProperties_default()(props, [ "classes", "className", "color", "theme", "value", "valueBuffer", "variant" ]), className = Object(clsx_m["a"])(classes.root, classNameProp, "primary" === color ? classes.colorPrimary : classes.colorSecondary, "determinate" === variant && classes.determinate, "indeterminate" === variant && classes.indeterminate, "buffer" === variant && classes.buffer, "query" === variant && classes.query), dashedClass = Object(clsx_m["a"])(classes.dashed, "primary" === color ? classes.dashedColorPrimary : classes.dashedColorSecondary), bar1ClassName = Object(clsx_m["a"])(classes.bar, ("indeterminate" === variant || "query" === variant) && classes.bar1Indeterminate, "primary" === color ? classes.barColorPrimary : classes.barColorSecondary, "determinate" === variant && classes.bar1Determinate, "buffer" === variant && classes.bar1Buffer), bar2ClassName = Object(clsx_m["a"])(classes.bar, ("indeterminate" === variant || "query" === variant) && classes.bar2Indeterminate, "buffer" === variant ? [ classes.bar2Buffer, "primary" === color ? classes.colorPrimary : classes.colorSecondary ] : "primary" === color ? classes.barColorPrimary : classes.barColorSecondary), rootProps = {}, inlineStyles = {
@@ -17051,21 +17047,21 @@
         }
     })), yup_lib = __webpack_require__(15);
     const SUPPORTED_FORMATS = [ "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ], initialValues = {
-        numero_documento: "",
+        numero_documento: "1144093949",
         tipo_documento: "",
-        nombre: "",
-        apellidos: "",
-        universidad: "",
-        email: "",
-        direccion: "",
-        telefono: "",
-        ciudad: "",
-        celular: "",
+        nombre: "ANDRES",
+        apellidos: "SUAREZ",
+        universidad: "UNIVALLE",
+        email: "andresfelipe9619@gmail.com",
+        direccion: "Mariano Ramos",
+        telefono: "2222",
+        ciudad: "Cali",
+        celular: "333333",
         archivo_ponencia: undefined,
         tematica_ponencia: "",
-        descripcion_ponencia: "",
-        importancia_tema: "",
-        motivos_interes: ""
+        descripcion_ponencia: "AWESOME",
+        importancia_tema: "ITS AWESOME",
+        motivos_interes: "AWESOMENESS"
     }, validationSchema = yup_lib["object"]().shape({
         numero_documento: yup_lib["number"]().required("Campo Obligatorio"),
         telefono: yup_lib["number"]().required("Campo Obligatorio"),
@@ -17082,6 +17078,9 @@
         importancia_tema: yup_lib["string"]().required("Campo Obligatorio").max(500, "Limite de 500 caracteres"),
         motivos_interes: yup_lib["string"]().required("Campo Obligatorio").max(300, "Limite de 300 caracteres"),
         archivo_ponencia: yup_lib["mixed"]().required("Es requerido el archivo").test("fileSize", "Archivo muy grande", value => value && value.size <= 163840).test("fileFormat", "Formato no soportado", value => value && SUPPORTED_FORMATS.includes(value.type))
+    }), getFile = file => new Promise(resolve => {
+        let reader = new FileReader();
+        reader.onloadend = (() => resolve(reader.result)), reader.readAsDataURL(file);
     });
     function FormPage_ownKeys(object, enumerableOnly) {
         var keys = Object.keys(object);
@@ -17112,14 +17111,16 @@
         }
         return target;
     }
-    function FormPage() {
-        const classes = form_page_styles(), [isLoading, setIsLoading] = Object(react["useState"])(!1), [isSuccess, setIsSuccess] = Object(react["useState"])(!1), [error, setError] = Object(react["useState"])(null), {searchPerson: searchPerson, registerPerson: registerPerson, createPonenciaFile: createPonenciaFile} = server, onSubmit = Object(react["useCallback"])(async (values, {setSubmitting: setSubmitting}) => {
+    function FormPage(props) {
+        const classes = form_page_styles(), {openAlert: openAlert} = props, [isLoading, setIsLoading] = Object(react["useState"])(!1), [isSuccess, setIsSuccess] = Object(react["useState"])(!1), [error, setError] = Object(react["useState"])(null), {searchPerson: searchPerson, registerPerson: registerPerson, createPonenciaFile: createPonenciaFile} = server, onSubmit = Object(react["useCallback"])(async (values, {setSubmitting: setSubmitting}) => {
             const {archivo_ponencia: archivo_ponencia, numero_documento: numero_documento} = values, formData = FormPage_objectWithoutProperties(values, [ "archivo_ponencia", "numero_documento" ]);
             setSubmitting(!0), console.log("SUBMIT VALUES", values);
             try {
                 setIsLoading(!0);
-                const result = await createPonenciaFile(numero_documento, archivo_ponencia);
-                console.log("result", result), await registerPerson(JSON.stringify(function(target) {
+                const fileString = await getFile(archivo_ponencia);
+                console.log("fileString", fileString);
+                const fileFromDrive = await createPonenciaFile(numero_documento, fileString);
+                console.log("fileFromDrive", fileFromDrive), await registerPerson(JSON.stringify(function(target) {
                     for (var i = 1; i < arguments.length; i++) {
                         var source = null != arguments[i] ? arguments[i] : {};
                         i % 2 ? FormPage_ownKeys(source, !0).forEach(function(key) {
@@ -17130,10 +17131,14 @@
                     }
                     return target;
                 }({}, formData, {
-                    numero_documento: numero_documento
+                    numero_documento: numero_documento,
+                    archivo_ponencia: fileFromDrive.url
                 }))), setIsSuccess(!0);
             } catch (error) {
-                setError(error), console.error("Error trying to sumbit form:", error);
+                setError(error), openAlert({
+                    variant: "error",
+                    message: "Error trying to sumbit form:"
+                }), console.error("Error trying to sumbit form:", error);
             } finally {
                 setIsLoading(!1), setSubmitting(!1);
             }
@@ -17172,6 +17177,8 @@
                 value: values.tipo_documento,
                 required: !0,
                 fullWidth: !0,
+                helperText: touched.tipo_documento && errors.tipo_documento,
+                error: !(!touched.tipo_documento || !errors.tipo_documento),
                 className: {
                     root: classes.root,
                     select: classes.select
@@ -17360,6 +17367,8 @@
                     root: classes.root,
                     select: classes.select
                 },
+                helperText: touched.tematica_ponencia && errors.tematica_ponencia,
+                error: !(!touched.tematica_ponencia || !errors.tematica_ponencia),
                 value: values.tematica_ponencia,
                 onChange: handleChange,
                 disabled: isLoading || error,
@@ -17432,15 +17441,19 @@
             }), react_default.a.createElement(Grid_Grid, {
                 container: !0,
                 item: !0,
-                xs: 12
+                xs: 12,
+                alignItems: "center",
+                justify: "center"
             }, react_default.a.createElement(Grid_Grid, {
                 item: !0,
                 xs: 12
             }, react_default.a.createElement(esm_InputLabel_InputLabel, {
                 htmlFor: "archivo_ponencia"
-            }, "Archivo Word a subir debe cargarse como Documentos WORD 2007 y seguir las especificaciones técnicas que se indican en la pestaña de descargas")), react_default.a.createElement(Grid_Grid, {
+            }, "Archivo Word a subir debe cargarse como Documentos WORD 2007 y seguir las especificaciones técnicas que se indican en la pestaña de descargas")), react_default.a.createElement(esm_Divider_Divider, {
+                variant: "middle"
+            }), react_default.a.createElement(Grid_Grid, {
                 item: !0,
-                xs: 6
+                xs: 8
             }, react_default.a.createElement(CustomDropzone, {
                 disabled: isLoading || error,
                 setFieldValue: setFieldValue,
@@ -17559,7 +17572,7 @@
     react_default.a.Component;
     react_default.a.Component;
     function AppRouter() {
-        const {open: open, message: message, variant: variant, closeAlert: closeAlert} = Object(react["useContext"])(alert_context);
+        const {open: open, message: message, variant: variant, closeAlert: closeAlert, openAlert: openAlert} = Object(react["useContext"])(alert_context);
         return react_default.a.createElement(react_router_dom_BrowserRouter, null, react_default.a.createElement(CssBaseline_CssBaseline, null), react_default.a.createElement(navbar_Navbar, null), react_default.a.createElement(esm_Container_Container, {
             maxWidth: "lg"
         }, react_default.a.createElement(Alert, {
@@ -17567,7 +17580,9 @@
             message: message,
             variant: variant,
             handleClose: closeAlert
-        }), react_default.a.createElement(FormPage, null)));
+        }), react_default.a.createElement(FormPage, {
+            openAlert: openAlert
+        })));
     }
     var createMuiTheme = __webpack_require__(156), ThemeContext = (__webpack_require__(26), 
     __webpack_require__(60)), nested = __webpack_require__(61);

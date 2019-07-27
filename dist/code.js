@@ -54,16 +54,22 @@ function registerPerson() {
     }, __webpack_require__.p = "", __webpack_require__(__webpack_require__.s = 1);
 }([ function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
-    __webpack_require__.d(__webpack_exports__, "b", function() {
-        return doGet;
-    }), __webpack_require__.d(__webpack_exports__, "d", function() {
-        return searchPerson;
-    }), __webpack_require__.d(__webpack_exports__, "a", function() {
-        return createPonenciaFile;
-    }), __webpack_require__.d(__webpack_exports__, "c", function() {
-        return registerPerson;
-    });
-    var ROOT_FOLDER = "ENCUENTRO COLOMBIANO", GENERAL_DB = "https://docs.google.com/spreadsheets/d/1OG6EPZzzVq_P2KjQ6kDcsJ0YmMlwSYwcZ-Xqb4LeOFo/edit#gid=0";
+    var ROOT_FOLDER = "ENCUENTRO COLOMBIANO";
+    function createPersonFile(name, numdoc, data) {
+        var dropbox, folders, result = {
+            url: "",
+            file: ""
+        }, currentFolder = function(name, mainFolder) {
+            var FolderFiles, folders = mainFolder.getFoldersByName("documentos"), mFolders = (FolderFiles = folders.hasNext() ? folders.next() : mainFolder.createFolder("documentos")).getFoldersByName(name);
+            return mFolders.hasNext() ? mFolders.next() : FolderFiles.createFolder(name);
+        }(numdoc, (dropbox = ROOT_FOLDER, (folders = DriveApp.getFoldersByName(dropbox)).hasNext() ? folders.next() : DriveApp.createFolder(dropbox))), contentType = data.substring(5, data.indexOf(";")), bytes = Utilities.base64Decode(data.substr(data.indexOf("base64,") + 7)), blob = Utilities.newBlob(bytes, contentType, file), file = currentFolder.createFile(blob);
+        return file.setDescription("Subido Por " + numdoc), file.setName(numdoc + "_" + name), 
+        result.url = file.getUrl(), result.file = file.getName(), result;
+    }
+    function createPonenciaFile(numdoc, data) {
+        return createPersonFile("PONENCIA", numdoc, data);
+    }
+    var GENERAL_DB = "https://docs.google.com/spreadsheets/d/1OG6EPZzzVq_P2KjQ6kDcsJ0YmMlwSYwcZ-Xqb4LeOFo/edit#gid=0";
     function doGet(request) {
         return filename = "index.html", HtmlService.createHtmlOutputFromFile(filename).setTitle("Encuentro Colombiano").setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
         var filename;
@@ -132,20 +138,6 @@ function registerPerson() {
         return logFunctionOutput(validatePerson.name, result), result.index < 0 && (result.isRegistered = !1), 
         JSON.stringify(result);
     }
-    function createPersonFile(name, numdoc, data) {
-        var dropbox, folders, result = {
-            url: "",
-            file: ""
-        }, currentFolder = function(name, mainFolder) {
-            var FolderFiles, folders = mainFolder.getFoldersByName("documentos"), mFolders = (FolderFiles = folders.hasNext() ? folders.next() : mainFolder.createFolder("documentos")).getFoldersByName(name);
-            return mFolders.hasNext() ? mFolders.next() : FolderFiles.createFolder(name);
-        }(numdoc, (dropbox = ROOT_FOLDER, (folders = DriveApp.getFoldersByName(dropbox)).hasNext() ? folders.next() : DriveApp.createFolder(dropbox))), contentType = data.substring(5, data.indexOf(";")), bytes = Utilities.base64Decode(data.substr(data.indexOf("base64,") + 7)), blob = Utilities.newBlob(bytes, contentType, file), file = currentFolder.createFile(blob);
-        return file.setDescription("Subido Por " + numdoc), file.setName(numdoc + "_" + name), 
-        result.url = file.getUrl(), result.file = file.getName(), result;
-    }
-    function createPonenciaFile(numdoc, data) {
-        return createPersonFile("PONENCIA", numdoc, data);
-    }
     function getSheetFromSpreadSheet(url, sheet) {
         var Spreedsheet = SpreadsheetApp.openByUrl(url);
         if (url && sheet) return Spreedsheet.getSheetByName(sheet);
@@ -154,13 +146,21 @@ function registerPerson() {
         Logger.log("Function--------\x3e" + functionName), Logger.log("Value------------\x3e"), 
         Logger.log(returnValue), Logger.log("----------------------------------");
     }
+    __webpack_require__.d(__webpack_exports__, "b", function() {
+        return doGet;
+    }), __webpack_require__.d(__webpack_exports__, "d", function() {
+        return searchPerson;
+    }), __webpack_require__.d(__webpack_exports__, "c", function() {
+        return registerPerson;
+    }), __webpack_require__.d(__webpack_exports__, "a", function() {
+        return createPonenciaFile;
+    });
 }, function(module, __webpack_exports__, __webpack_require__) {
     "use strict";
     __webpack_require__.r(__webpack_exports__), function(global) {
-        var _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
-        global.doGet = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["b"], global.searchPerson = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["d"], 
-        global.createPonenciaFile = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["a"], 
-        global.registerPerson = _sheets_utilities_js__WEBPACK_IMPORTED_MODULE_0__["c"];
+        var _index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
+        global.doGet = _index_js__WEBPACK_IMPORTED_MODULE_0__["b"], global.searchPerson = _index_js__WEBPACK_IMPORTED_MODULE_0__["d"], 
+        global.createPonenciaFile = _index_js__WEBPACK_IMPORTED_MODULE_0__["a"], global.registerPerson = _index_js__WEBPACK_IMPORTED_MODULE_0__["c"];
     }.call(this, __webpack_require__(2));
 }, function(module, exports) {
     var g;

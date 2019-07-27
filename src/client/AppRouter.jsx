@@ -7,7 +7,9 @@ import Container from '@material-ui/core/Container';
 import {BrowserRouter} from 'react-router-dom';
 import AlertContext from './context/alert-context';
 export default function AppRouter() {
-  const {open, message, variant, closeAlert} = useContext(AlertContext);
+  const {open, message, variant, closeAlert, openAlert} = useContext(
+    AlertContext
+  );
   return (
     <BrowserRouter>
       <CssBaseline />
@@ -19,7 +21,7 @@ export default function AppRouter() {
           variant={variant}
           handleClose={closeAlert}
         />
-        <FormPage />
+        <FormPage openAlert={openAlert} />
       </Container>
     </BrowserRouter>
   );

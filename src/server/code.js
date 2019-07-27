@@ -1,4 +1,4 @@
-import * as publicFunctions from './sheets-utilities.js';
+import * as publicFunctions from './index.js';
 
 // Expose public functions
 global.doGet = publicFunctions.doGet;

@@ -19,8 +19,11 @@ import {
   validationSchema,
   initialValues,
 } from './form-settings';
-export default function FormPage() {
+import {getFile} from '../utils';
+
+export default function FormPage(props) {
   const classes = useStyles();
+  const {openAlert} = props;
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState(null);
@@ -32,15 +35,27 @@ export default function FormPage() {
     console.log('SUBMIT VALUES', values);
     try {
       setIsLoading(true);
-      const result = await createPonenciaFile(
+      const fileString = await getFile(archivo_ponencia);
+      console.log('fileString', fileString);
+      const fileFromDrive = await createPonenciaFile(
         numero_documento,
-        archivo_ponencia
+        fileString
       );
-      console.log('result', result);
-      await registerPerson(JSON.stringify({...formData, numero_documento}));
+      console.log('fileFromDrive', fileFromDrive);
+      await registerPerson(
+        JSON.stringify({
+          ...formData,
+          numero_documento,
+          archivo_ponencia: fileFromDrive.url,
+        })
+      );
       setIsSuccess(true);
     } catch (error) {
       setError(error);
+      openAlert({
+        variant: 'error',
+        message: 'Error trying to sumbit form:',
+      });
       console.error('Error trying to sumbit form:', error);
     } finally {
       setIsLoading(false);
@@ -88,6 +103,12 @@ export default function FormPage() {
                         value={values.tipo_documento}
                         required
                         fullWidth
+                        helperText={
+                          touched.tipo_documento && errors.tipo_documento
+                        }
+                        error={
+                          !!(touched.tipo_documento && errors.tipo_documento)
+                        }
                         className={{
                           root: classes.root,
                           select: classes.select,
@@ -271,6 +292,15 @@ export default function FormPage() {
                           root: classes.root,
                           select: classes.select,
                         }}
+                        helperText={
+                          touched.tematica_ponencia && errors.tematica_ponencia
+                        }
+                        error={
+                          !!(
+                            touched.tematica_ponencia &&
+                            errors.tematica_ponencia
+                          )
+                        }
                         value={values.tematica_ponencia}
                         onChange={handleChange}
                         disabled={isLoading || error}
@@ -356,7 +386,13 @@ export default function FormPage() {
                     />
                   </Grid>
                   <Divider variant="middle" />
-                  <Grid container item xs={12}>
+                  <Grid
+                    container
+                    item
+                    xs={12}
+                    alignItems="center"
+                    justify="center"
+                  >
                     <Grid item xs={12}>
                       <InputLabel htmlFor="archivo_ponencia">
                         Archivo Word a subir debe cargarse como Documentos WORD
@@ -364,7 +400,8 @@ export default function FormPage() {
                         indican en la pestaña de descargas
                       </InputLabel>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Divider variant="middle" />
+                    <Grid item xs={8}>
                       <Dropzone
                         disabled={isLoading || error}
                         setFieldValue={setFieldValue}

@@ -5,21 +5,21 @@ const SUPPORTED_FORMATS = [
 ];
 
 const initialValues = {
-  numero_documento: '',
+  numero_documento: '1144093949',
   tipo_documento: '',
-  nombre: '',
-  apellidos: '',
-  universidad: '',
-  email: '',
-  direccion: '',
-  telefono: '',
-  ciudad: '',
-  celular: '',
+  nombre: 'ANDRES',
+  apellidos: 'SUAREZ',
+  universidad: 'UNIVALLE',
+  email: 'andresfelipe9619@gmail.com',
+  direccion: 'Mariano Ramos',
+  telefono: '2222',
+  ciudad: 'Cali',
+  celular: '333333',
   archivo_ponencia: undefined,
   tematica_ponencia: '',
-  descripcion_ponencia: '',
-  importancia_tema: '',
-  motivos_interes: '',
+  descripcion_ponencia: 'AWESOME',
+  importancia_tema: 'ITS AWESOME',
+  motivos_interes: 'AWESOMENESS',
 };
 
 const validationSchema = Yup.object().shape({

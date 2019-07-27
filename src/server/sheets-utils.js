@@ -1,5 +1,4 @@
 // Use ES6/7 code
-const ROOT_FOLDER = 'ENCUENTRO COLOMBIANO';
 const GENERAL_DB =
   'https://docs.google.com/spreadsheets/d/1OG6EPZzzVq_P2KjQ6kDcsJ0YmMlwSYwcZ-Xqb4LeOFo/edit#gid=0';
 
@@ -61,9 +60,6 @@ function registerPerson(data) {
 
 function validatePerson(cedula) {
   let inscritos = getPeopleRegistered();
-  // let dir_cert_ponen_id = '17ubi8AdovGF9kKNA-V1mlG79NPqrx89c';
-  // let dir_cert_ponen = DriveApp.getFolderById(dir_cert_ponen_id);
-  // let certificados_ponencia = dir_cert_ponen.getFiles();
   let result = {
     isRegistered: false,
     index: -1,
@@ -84,66 +80,6 @@ function validatePerson(cedula) {
     result.isRegistered = false;
   }
   return JSON.stringify(result);
-}
-
-function getPersonFolder(name, mainFolder) {
-  // se crea la carpeta que va conener todos los docmuentos
-  let nameFolder = 'documentos';
-  let FolderFiles;
-  let folders = mainFolder.getFoldersByName(nameFolder);
-  if (folders.hasNext()) {
-    FolderFiles = folders.next();
-  } else {
-    FolderFiles = mainFolder.createFolder(nameFolder);
-  }
-
-  // se crea la carpeta que va contener los documentos de cada inscrito
-  let currentFolder;
-  let mFolders = FolderFiles.getFoldersByName(name);
-  if (mFolders.hasNext()) {
-    currentFolder = mFolders.next();
-  } else {
-    currentFolder = FolderFiles.createFolder(name);
-  }
-
-  return currentFolder;
-}
-
-function getMainFolder() {
-  let dropbox = ROOT_FOLDER;
-  let mainFolder;
-  let folders = DriveApp.getFoldersByName(dropbox);
-
-  if (folders.hasNext()) {
-    mainFolder = folders.next();
-  } else {
-    mainFolder = DriveApp.createFolder(dropbox);
-  }
-  return mainFolder;
-}
-function createPersonFile(name, numdoc, data) {
-  let result = {
-    url: '',
-    file: '',
-  };
-  let mainFolder = getMainFolder();
-  let currentFolder = getPersonFolder(numdoc, mainFolder);
-
-  let contentType = data.substring(5, data.indexOf(';'));
-  let bytes = Utilities.base64Decode(data.substr(data.indexOf('base64,') + 7));
-  let blob = Utilities.newBlob(bytes, contentType, file);
-
-  let file = currentFolder.createFile(blob);
-  file.setDescription('Subido Por ' + numdoc);
-  file.setName(numdoc + '_' + name);
-  result.url = file.getUrl();
-  result.file = file.getName();
-  return result;
-}
-
-function createPonenciaFile(numdoc, data) {
-  let res = createPersonFile('PONENCIA', numdoc, data);
-  return res;
 }
 
 function getSheetFromSpreadSheet(url, sheet) {
@@ -210,22 +146,4 @@ function logFunctionOutput(functionName, returnValue) {
   Logger.log('----------------------------------');
 }
 
-// function sendInternationalMail(person) {
-//   let htmlBody = buildInternationalBody(person);
-//   let subject = 'Confirmación de Registro Internacional';
-//   sendEmail(subject, htmlBody, person);
-// }
-
-function sendEmail(subject, body, person) {
-  Logger.log('I like the way you french inhale');
-  if (person) {
-    MailApp.sendEmail({
-      to: person.email,
-      subject: subject,
-      name: 'COGESTEC 2019',
-      htmlBody: body,
-    });
-  }
-}
-
-export {doGet, searchPerson, createPonenciaFile, registerPerson};
+export {doGet, searchPerson, registerPerson};
