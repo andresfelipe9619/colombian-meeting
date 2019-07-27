@@ -20,7 +20,7 @@ export default function CustomDropzone({
 
   const style = {
     borderStyle: 'dashed',
-    borderColor: error ? 'red' : 'black',
+    borderColor: error ? 'red' : disabled ? 'gray' : 'black',
   };
 
   return (

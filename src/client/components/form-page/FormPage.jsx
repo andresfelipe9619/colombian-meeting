@@ -10,6 +10,7 @@ import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
 import Dropzone from '../dropzone/Dropzone';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import {Formik} from 'formik';
 import server from '../../server';
@@ -107,7 +108,13 @@ export default function FormPage(props) {
               <form onSubmit={handleSubmit}>
                 <Grid container spacing={8}>
                   <Grid item xs={12} sm={6}>
-                    <FormControl className={classes.formControl} fullWidth>
+                    <FormControl
+                      className={classes.formControl}
+                      fullWidth
+                      error={
+                        !!(touched.tipo_documento && errors.tipo_documento)
+                      }
+                    >
                       <InputLabel htmlFor="tipo_documento">
                         Tipo de documento
                       </InputLabel>
@@ -115,12 +122,6 @@ export default function FormPage(props) {
                         value={values.tipo_documento}
                         required
                         fullWidth
-                        helperText={
-                          touched.tipo_documento && errors.tipo_documento
-                        }
-                        error={
-                          !!(touched.tipo_documento && errors.tipo_documento)
-                        }
                         className={{
                           root: classes.root,
                           select: classes.select,
@@ -142,6 +143,9 @@ export default function FormPage(props) {
                           Extranjero
                         </MenuItem>
                       </Select>
+                      <FormHelperText>
+                        {touched.tipo_documento && errors.tipo_documento}
+                      </FormHelperText>
                     </FormControl>
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -162,7 +166,6 @@ export default function FormPage(props) {
                       name="numero_documento"
                       label="Número de Identificación"
                       fullWidth
-                      autoComplete="billing numero_documento-line"
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -178,7 +181,6 @@ export default function FormPage(props) {
                       error={!!(touched.nombre && errors.nombre)}
                       required
                       fullWidth
-                      autoComplete="fname"
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -194,7 +196,6 @@ export default function FormPage(props) {
                       name="apellidos"
                       label="Apellidos"
                       fullWidth
-                      autoComplete="lname"
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -210,7 +211,6 @@ export default function FormPage(props) {
                       name="universidad"
                       label="Universidad"
                       fullWidth
-                      autoComplete="billing numero_documento-level2"
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -222,6 +222,7 @@ export default function FormPage(props) {
                       helperText={touched.email && errors.email}
                       error={!!(touched.email && errors.email)}
                       id="email"
+                      type="email"
                       name="email"
                       label="Email"
                       fullWidth
@@ -240,7 +241,6 @@ export default function FormPage(props) {
                       name="direccion"
                       label="Dirección"
                       fullWidth
-                      autoComplete="billing address"
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -252,12 +252,11 @@ export default function FormPage(props) {
                       helperText={touched.telefono && errors.telefono}
                       error={!!(touched.telefono && errors.telefono)}
                       required
-                      type="tel"
+                      type="number"
                       id="telefono"
                       name="telefono"
                       label="Teléfono"
                       fullWidth
-                      autoComplete="billing telefono"
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -273,7 +272,6 @@ export default function FormPage(props) {
                       name="ciudad"
                       label="Ciudad"
                       fullWidth
-                      autoComplete="billing ciudad"
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -287,13 +285,20 @@ export default function FormPage(props) {
                       id="celular"
                       name="celular"
                       label="Celular"
-                      type="tel"
+                      type="number"
                       fullWidth
-                      autoComplete="billing celular"
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
-                    <FormControl className={classes.formControl} fullWidth>
+                    <FormControl
+                      className={classes.formControl}
+                      fullWidth
+                      error={
+                        !!(
+                          touched.tematica_ponencia && errors.tematica_ponencia
+                        )
+                      }
+                    >
                       <InputLabel htmlFor="tematica_ponencia">
                         Línea temática de ponencia
                       </InputLabel>
@@ -304,15 +309,6 @@ export default function FormPage(props) {
                           root: classes.root,
                           select: classes.select,
                         }}
-                        helperText={
-                          touched.tematica_ponencia && errors.tematica_ponencia
-                        }
-                        error={
-                          !!(
-                            touched.tematica_ponencia &&
-                            errors.tematica_ponencia
-                          )
-                        }
                         value={values.tematica_ponencia}
                         onChange={handleChange}
                         disabled={isLoading || error}
@@ -321,10 +317,15 @@ export default function FormPage(props) {
                           id: 'tematica_ponencia',
                         }}
                       >
-                        <MenuItem value={10}>Gestión Cultural</MenuItem>
-                        <MenuItem value={20}>Ingeniería</MenuItem>
-                        <MenuItem value={30}>Otros</MenuItem>
+                        <MenuItem value={'Gestión Cultural'}>
+                          Gestión Cultural
+                        </MenuItem>
+                        <MenuItem value={'Ingeniería'}>Ingeniería</MenuItem>
+                        <MenuItem value={'Otros'}>Otros</MenuItem>
                       </Select>
+                      <FormHelperText>
+                        {touched.tematica_ponencia && errors.tematica_ponencia}
+                      </FormHelperText>
                     </FormControl>
                   </Grid>
                   <Grid item xs={12} sm={6}>
