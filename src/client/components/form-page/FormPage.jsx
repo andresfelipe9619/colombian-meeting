@@ -29,39 +29,51 @@ export default function FormPage(props) {
   const [error, setError] = useState(null);
   const {searchPerson, registerPerson, createPonenciaFile} = server;
 
-  const onSubmit = useCallback(async (values, {setSubmitting}) => {
+  const onSubmit = useCallback(async (values, {setSubmitting, resetForm}) => {
     const {archivo_ponencia, numero_documento, ...formData} = values;
     setSubmitting(true);
-    console.log('SUBMIT VALUES', values);
     try {
       setIsLoading(true);
       const fileString = await getFile(archivo_ponencia);
-      console.log('fileString', fileString);
       const fileFromDrive = await createPonenciaFile(
         numero_documento,
         fileString
       );
-      console.log('fileFromDrive', fileFromDrive);
-      await registerPerson(
-        JSON.stringify({
-          ...formData,
-          numero_documento,
-          archivo_ponencia: fileFromDrive.url,
-        })
-      );
-      setIsSuccess(true);
-    } catch (error) {
-      setError(error);
-      openAlert({
-        variant: 'error',
-        message: 'Error trying to sumbit form:',
+      const person = JSON.stringify({
+        ...formData,
+        numero_documento,
+        archivo_ponencia: fileFromDrive.url,
       });
-      console.error('Error trying to sumbit form:', error);
+      await registerPerson(person);
+      onSuccess(resetForm);
+    } catch (error) {
+      onError(error);
     } finally {
       setIsLoading(false);
       setSubmitting(false);
     }
   }, []);
+
+  const onSuccess = (resetForm) => {
+    setIsSuccess(true);
+    openAlert({
+      variant: 'success',
+      message: 'Formulario Enviado Satisfactoriamente',
+    });
+    setTimeout(() => {
+      setIsSuccess(false);
+      resetForm(initialValues);
+    }, 5000);
+  };
+
+  const onError = (error) => {
+    setError(error);
+    openAlert({
+      variant: 'error',
+      message: 'Algo Fue Mal Enviando El Formulario',
+    });
+    console.error('Error trying to sumbit form:', error);
+  };
 
   useEffect(() => {
     searchPerson('123').then((data) => console.log('data', data));
@@ -389,6 +401,7 @@ export default function FormPage(props) {
                   <Grid
                     container
                     item
+                    spacing={8}
                     xs={12}
                     alignItems="center"
                     justify="center"
@@ -431,6 +444,7 @@ export default function FormPage(props) {
                       gestión universitaria.
                     </Typography>
                     <Button
+                      disabled={error || isLoading}
                       className={classes.button}
                       variant="contained"
                       type="submit"
@@ -440,7 +454,8 @@ export default function FormPage(props) {
                     </Button>
                     {isSuccess && (
                       <Typography variant="h4">
-                        Formulario Enviado Satisfactoriamente
+                        Muchas gracias por su inscripción. Estaremos en contacto
+                        con usted.
                       </Typography>
                     )}
                     {isLoading && <LinearProgress />}

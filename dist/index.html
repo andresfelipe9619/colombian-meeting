@@ -15859,7 +15859,12 @@
         name: "MuiIcon"
     })(Icon_Icon);
     function Thumb({file: file, loading: loading}) {
-        return file ? loading ? react_default.a.createElement("p", null, "Cargando Archivo...") : react_default.a.createElement(react_default.a.Fragment, null, react_default.a.createElement(esm_Icon_Icon, null, "description"), react_default.a.createElement("p", null, react_default.a.createElement("strong", null, "Nombre: "), " ", file.name), react_default.a.createElement("p", null, react_default.a.createElement("strong", null, "Tamaño: "), " ", file.size)) : null;
+        if (!file) return null;
+        if (loading) return react_default.a.createElement("p", null, "Cargando Archivo...");
+        let size = file.size, i = 0;
+        for (;size > 900; ) size /= 1024, i++;
+        let exactSize = Math.round(100 * size) / 100 + " " + [ "Bytes", "KB", "MB", "GB" ][i];
+        return react_default.a.createElement(react_default.a.Fragment, null, react_default.a.createElement(esm_Icon_Icon, null, "description"), react_default.a.createElement("p", null, react_default.a.createElement("strong", null, "Nombre: "), " ", file.name), react_default.a.createElement("p", null, react_default.a.createElement("strong", null, "Tamaño: "), " ", exactSize));
     }
     function Dropzone_extends() {
         return (Dropzone_extends = Object.assign || function(target) {
@@ -17046,23 +17051,24 @@
             margin: "30px 40px"
         }
     })), yup_lib = __webpack_require__(15);
-    const SUPPORTED_FORMATS = [ "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ], initialValues = {
-        numero_documento: "1144093949",
+    const SUPPORTED_FORMATS = [ "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ], initialValues = (undefined, 
+    {
+        numero_documento: "",
         tipo_documento: "",
-        nombre: "ANDRES",
-        apellidos: "SUAREZ",
-        universidad: "UNIVALLE",
-        email: "andresfelipe9619@gmail.com",
-        direccion: "Mariano Ramos",
-        telefono: "2222",
-        ciudad: "Cali",
-        celular: "333333",
+        nombre: "",
+        apellidos: "",
+        universidad: "",
+        email: "",
+        direccion: "",
+        telefono: "",
+        ciudad: "",
+        celular: "",
         archivo_ponencia: undefined,
         tematica_ponencia: "",
-        descripcion_ponencia: "AWESOME",
-        importancia_tema: "ITS AWESOME",
-        motivos_interes: "AWESOMENESS"
-    }, validationSchema = yup_lib["object"]().shape({
+        descripcion_ponencia: "",
+        importancia_tema: "",
+        motivos_interes: ""
+    }), validationSchema = yup_lib["object"]().shape({
         numero_documento: yup_lib["number"]().required("Campo Obligatorio"),
         telefono: yup_lib["number"]().required("Campo Obligatorio"),
         tipo_documento: yup_lib["string"]().required("Campo Obligatorio"),
@@ -17112,15 +17118,12 @@
         return target;
     }
     function FormPage(props) {
-        const classes = form_page_styles(), {openAlert: openAlert} = props, [isLoading, setIsLoading] = Object(react["useState"])(!1), [isSuccess, setIsSuccess] = Object(react["useState"])(!1), [error, setError] = Object(react["useState"])(null), {searchPerson: searchPerson, registerPerson: registerPerson, createPonenciaFile: createPonenciaFile} = server, onSubmit = Object(react["useCallback"])(async (values, {setSubmitting: setSubmitting}) => {
+        const classes = form_page_styles(), {openAlert: openAlert} = props, [isLoading, setIsLoading] = Object(react["useState"])(!1), [isSuccess, setIsSuccess] = Object(react["useState"])(!1), [error, setError] = Object(react["useState"])(null), {searchPerson: searchPerson, registerPerson: registerPerson, createPonenciaFile: createPonenciaFile} = server, onSubmit = Object(react["useCallback"])(async (values, {setSubmitting: setSubmitting, resetForm: resetForm}) => {
             const {archivo_ponencia: archivo_ponencia, numero_documento: numero_documento} = values, formData = FormPage_objectWithoutProperties(values, [ "archivo_ponencia", "numero_documento" ]);
-            setSubmitting(!0), console.log("SUBMIT VALUES", values);
+            setSubmitting(!0);
             try {
                 setIsLoading(!0);
-                const fileString = await getFile(archivo_ponencia);
-                console.log("fileString", fileString);
-                const fileFromDrive = await createPonenciaFile(numero_documento, fileString);
-                console.log("fileFromDrive", fileFromDrive), await registerPerson(JSON.stringify(function(target) {
+                const fileString = await getFile(archivo_ponencia), fileFromDrive = await createPonenciaFile(numero_documento, fileString), person = JSON.stringify(function(target) {
                     for (var i = 1; i < arguments.length; i++) {
                         var source = null != arguments[i] ? arguments[i] : {};
                         i % 2 ? FormPage_ownKeys(source, !0).forEach(function(key) {
@@ -17133,16 +17136,26 @@
                 }({}, formData, {
                     numero_documento: numero_documento,
                     archivo_ponencia: fileFromDrive.url
-                }))), setIsSuccess(!0);
+                }));
+                await registerPerson(person), onSuccess(resetForm);
             } catch (error) {
-                setError(error), openAlert({
-                    variant: "error",
-                    message: "Error trying to sumbit form:"
-                }), console.error("Error trying to sumbit form:", error);
+                onError(error);
             } finally {
                 setIsLoading(!1), setSubmitting(!1);
             }
-        }, []);
+        }, []), onSuccess = resetForm => {
+            setIsSuccess(!0), openAlert({
+                variant: "success",
+                message: "Formulario Enviado Satisfactoriamente"
+            }), setTimeout(() => {
+                setIsSuccess(!1), resetForm(initialValues);
+            }, 5e3);
+        }, onError = error => {
+            setError(error), openAlert({
+                variant: "error",
+                message: "Algo Fue Mal Enviando El Formulario"
+            }), console.error("Error trying to sumbit form:", error);
+        };
         return Object(react["useEffect"])(() => {
             searchPerson("123").then(data => console.log("data", data));
         }, []), react_default.a.createElement("div", null, react_default.a.createElement(esm_Typography_Typography, {
@@ -17441,6 +17454,7 @@
             }), react_default.a.createElement(Grid_Grid, {
                 container: !0,
                 item: !0,
+                spacing: 8,
                 xs: 12,
                 alignItems: "center",
                 justify: "center"
@@ -17469,13 +17483,14 @@
             }, react_default.a.createElement(esm_Typography_Typography, {
                 variant: "body1"
             }, "El Comité organizador seleccionará las ponencias que se presentarán en el IV Encuentro Colombiano de Gestíon Universitaria. Dentri de los criterios de la aprobación están: La pertinencia del tema, la relación con las líneas temáticas, la importancia e interés para las Instituciones de Educación Superior; también se valorarán las buenas prácticas y casos de éxito para el mejoramiento de la gestión universitaria."), react_default.a.createElement(esm_Button_Button, {
+                disabled: error || isLoading,
                 className: classes.button,
                 variant: "contained",
                 type: "submit",
                 color: "primary"
             }, "Enviar"), isSuccess && react_default.a.createElement(esm_Typography_Typography, {
                 variant: "h4"
-            }, "Formulario Enviado Satisfactoriamente"), isLoading && react_default.a.createElement(esm_LinearProgress_LinearProgress, null)))));
+            }, "Muchas gracias por su inscripción. Estaremos en contacto con usted."), isLoading && react_default.a.createElement(esm_LinearProgress_LinearProgress, null)))));
         }));
     }
     var CssBaseline_useStyles = styles_makeStyles(function(theme) {

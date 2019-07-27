@@ -4,7 +4,7 @@ const SUPPORTED_FORMATS = [
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
 
-const initialValues = {
+const testValues = {
   numero_documento: '1144093949',
   tipo_documento: '',
   nombre: 'ANDRES',
@@ -20,6 +20,24 @@ const initialValues = {
   descripcion_ponencia: 'AWESOME',
   importancia_tema: 'ITS AWESOME',
   motivos_interes: 'AWESOMENESS',
+};
+
+const initialValues = {
+  numero_documento: '',
+  tipo_documento: '',
+  nombre: '',
+  apellidos: '',
+  universidad: '',
+  email: '',
+  direccion: '',
+  telefono: '',
+  ciudad: '',
+  celular: '',
+  archivo_ponencia: undefined,
+  tematica_ponencia: '',
+  descripcion_ponencia: '',
+  importancia_tema: '',
+  motivos_interes: '',
 };
 
 const validationSchema = Yup.object().shape({
@@ -59,4 +77,4 @@ const validationSchema = Yup.object().shape({
     ),
 });
 
-export {validationSchema, initialValues, SUPPORTED_FORMATS};
+export {validationSchema, initialValues, testValues, SUPPORTED_FORMATS};
