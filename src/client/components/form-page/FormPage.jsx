@@ -82,12 +82,6 @@ export default function FormPage(props) {
 
   return (
     <div>
-      <Typography variant="h3" gutterBottom>
-        Formulario de inscripción de ponentes
-      </Typography>
-      <Typography variant="h6" gutterBottom>
-        Los campos marcados con asteriscos (*) son obligatorios.{' '}
-      </Typography>
       <Formik
         onSubmit={onSubmit}
         initialValues={initialValues}
@@ -105,6 +99,12 @@ export default function FormPage(props) {
           } = formikProps;
           return (
             <Paper className={classes.paper}>
+              <Typography variant="h3" gutterBottom>
+                Formulario de inscripción de ponentes
+              </Typography>
+              <Typography variant="h6" gutterBottom>
+                Los campos marcados con asteriscos (*) son obligatorios.{' '}
+              </Typography>
               <form onSubmit={handleSubmit}>
                 <Grid container spacing={8}>
                   <Grid item xs={12} sm={6}>

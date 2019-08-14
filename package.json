@@ -58,6 +58,7 @@
     "eslint-plugin-promise": "^3.8.0",
     "eslint-plugin-react": "^7.13.0",
     "eslint-plugin-standard": "^3.1.0",
+    "file-loader": "^4.2.0",
     "gas-lib": "^2.0.3",
     "gas-webpack-plugin": "^0.3.0",
     "html-webpack-inline-source-plugin": "0.0.10",
@@ -72,6 +73,7 @@
     "tern": "^0.22.3",
     "tern-googleappsscript": "^1.0.2",
     "uglifyjs-webpack-plugin": "^1.2.7",
+    "url-loader": "^2.1.0",
     "webpack": "^4.33.0",
     "webpack-clean": "^1.2.3",
     "webpack-cli": "^3.3.3"
