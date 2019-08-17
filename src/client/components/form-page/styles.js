@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(6, 4),
+    opacity: 0.96,
   },
   select: {
     flex: '0 0 auto',
